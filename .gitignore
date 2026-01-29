@@ -42,6 +42,8 @@ AGENTS.md
 !.githooks/
 !.githooks/**
 !.lfsconfig
+!.github/
+!.github/**
 __pycache__/
 *.pyc
 /publication/
