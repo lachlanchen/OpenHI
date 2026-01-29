@@ -9,6 +9,7 @@ Key hardware assets are kept alongside the code for quick access:
 
 Purchase the core development kit (excluding camera, tube lens, and optical table):
 - https://buy.stripe.com/7sY7sNaX90S50UGa0G2go03
+- Promotion code for 30% off: `OPTICA`
 
 ## Overview
 
