@@ -7,7 +7,8 @@ Key hardware assets are kept alongside the code for quick access:
 - Microcontroller firmware: `firmware/`
 - Acquisition UI (desktop): `ImagingGui/`
 
-Purchase the core development kit (excluding camera, tube lens, and optical table):
+Purchase the core development kit (excluding camera, tube lens, and optical table) for the paper
+[Self-calibrated neuromorphic hyperspectral imaging](https://doi.org/10.1364/opticaopen.30739151.v1):
 - https://lazying.art/openhi-kit.html
 - Promotion code for 30% off: `OPTICA`
 
