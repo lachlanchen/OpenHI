@@ -382,14 +382,16 @@ wavelength = wavelength_min + (t_normalized / t_max) * (wavelength_max - wavelen
 
 ## Citation
 
-If this repository is useful in your research, please cite the associated manuscript (under review):
+If this repository is useful in your research, please cite the Optica Open preprint:
 
 ```bibtex
 @article{chen2025selfcalibrated,
-  title   = {Self-Calibrated Neuromorphic Hyperspectral Imaging},
-  author  = {Chen, Rongzhou and Wang, Chutian and Li, Yuxing and Cao, Yuqing and Zhu, Shuo and Lam, Edmund Y.},
+  title   = {Self-calibrated neuromorphic hyperspectral imaging},
+  author  = {Chen, Rongzhou and Wang, Chutian and Li, Yuxing and Cao, Yuqing and Zhu, Shuo and Lam, Edmund},
   year    = {2025},
-  note    = {Manuscript under review}
+  journal = {Optica Open},
+  note    = {Preprint},
+  doi     = {10.1364/opticaopen.30739151.v1}
 }
 ```
 
