@@ -44,6 +44,24 @@ def load_image(path: Path) -> np.ndarray:
     return img
 
 
+def resize_nearest(img: np.ndarray, new_h: int, new_w: int) -> np.ndarray:
+    h, w = img.shape[:2]
+    y_idx = np.round(np.linspace(0, h - 1, new_h)).astype(int)
+    x_idx = np.round(np.linspace(0, w - 1, new_w)).astype(int)
+    if img.ndim == 2:
+        return img[np.ix_(y_idx, x_idx)]
+    return img[np.ix_(y_idx, x_idx, np.arange(img.shape[2]))]
+
+
+def maybe_downsample(img: np.ndarray, scale: float | None) -> Tuple[np.ndarray, float]:
+    if scale is None or np.isclose(scale, 1.0):
+        return img, 1.0
+    h, w = img.shape[:2]
+    new_h = max(1, int(round(h * scale)))
+    new_w = max(1, int(round(w * scale)))
+    return resize_nearest(img, new_h, new_w), float(scale)
+
+
 def run_cellpose(
     img: np.ndarray,
     model_type: str,
@@ -58,20 +76,28 @@ def run_cellpose(
     except Exception as exc:  # pragma: no cover
         raise RuntimeError("Cellpose is not installed. Install with `pip install cellpose`.") from exc
 
-    eval_kwargs = dict(
-        diameter=diameter,
-        flow_threshold=flow_threshold,
-        cellprob_threshold=cellprob_threshold,
-    )
-    if rescale is not None:
-        eval_kwargs["rescale"] = rescale
-
     if hasattr(models, "Cellpose"):
+        eval_kwargs = dict(
+            diameter=diameter,
+            flow_threshold=flow_threshold,
+            cellprob_threshold=cellprob_threshold,
+        )
+        if rescale is not None:
+            eval_kwargs["rescale"] = rescale
         model = models.Cellpose(model_type=model_type)
         masks, _, _, _ = model.eval(img, channels=[0, 0], **eval_kwargs)
     elif hasattr(models, "CellposeModel"):
         model = models.CellposeModel(pretrained_model=pretrained_model, model_type=None)
-        masks, _, _ = model.eval(img, **eval_kwargs)
+        img_in, scale = maybe_downsample(img, rescale)
+        masks, _, _ = model.eval(
+            img_in,
+            diameter=diameter,
+            flow_threshold=flow_threshold,
+            cellprob_threshold=cellprob_threshold,
+        )
+        if not np.isclose(scale, 1.0):
+            h, w = img.shape[:2]
+            masks = resize_nearest(masks, h, w)
     else:
         raise RuntimeError("Unsupported Cellpose API: no Cellpose or CellposeModel found.")
     return masks
