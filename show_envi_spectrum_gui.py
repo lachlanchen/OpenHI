@@ -144,7 +144,9 @@ def rgb_to_gray(rgb: np.ndarray) -> np.ndarray:
 def detect_cellpose_roi(
     rgb: np.ndarray,
     model_type: str,
+    pretrained_model: str,
     diameter: float | None,
+    rescale: float | None,
     flow_threshold: float,
     cellprob_threshold: float,
 ) -> np.ndarray | None:
@@ -159,27 +161,24 @@ def detect_cellpose_roi(
     if img.max() > 1.5:
         img = img / 255.0
     gray = rgb_to_gray(img)
+    eval_kwargs = dict(
+        diameter=diameter,
+        flow_threshold=flow_threshold,
+        cellprob_threshold=cellprob_threshold,
+    )
+    if rescale is not None:
+        eval_kwargs["rescale"] = rescale
+
     if hasattr(models, "Cellpose"):
         model = models.Cellpose(model_type=model_type)
-        masks, _, _, _ = model.eval(
-            gray,
-            channels=[0, 0],
-            diameter=diameter,
-            flow_threshold=flow_threshold,
-            cellprob_threshold=cellprob_threshold,
-        )
+        masks, _, _, _ = model.eval(gray, channels=[0, 0], **eval_kwargs)
     elif hasattr(models, "CellposeModel"):
-        model = models.CellposeModel(model_type=model_type)
-        if gray.ndim == 2:
-            img_in = np.stack([gray, gray, gray], axis=-1)
+        model = models.CellposeModel(pretrained_model=pretrained_model, model_type=None)
+        if img.ndim == 2:
+            img_in = np.stack([img, img, img], axis=-1)
         else:
-            img_in = gray
-        masks, _, _ = model.eval(
-            img_in,
-            diameter=diameter,
-            flow_threshold=flow_threshold,
-            cellprob_threshold=cellprob_threshold,
-        )
+            img_in = img
+        masks, _, _ = model.eval(img_in, **eval_kwargs)
     else:
         raise RuntimeError("Unsupported Cellpose API: no Cellpose or CellposeModel found.")
     if masks is None or masks.max() == 0:
@@ -324,7 +323,9 @@ def main() -> None:
     parser.add_argument("--roi-json", type=Path, default=None, help="Optional ROI json to overlay and average")
     parser.add_argument("--cellpose", action="store_true", help="Run Cellpose to auto-detect ROI")
     parser.add_argument("--cellpose-model", default="cyto", help="Cellpose model type (default: cyto)")
+    parser.add_argument("--cellpose-pretrained", default="cyto", help="Cellpose pretrained model (default: cyto)")
     parser.add_argument("--cellpose-diameter", type=float, default=None, help="Cellpose diameter; omit for auto")
+    parser.add_argument("--cellpose-rescale", type=float, default=None, help="Rescale image before Cellpose (e.g., 0.5)")
     parser.add_argument("--cellpose-flow-threshold", type=float, default=0.4, help="Cellpose flow threshold")
     parser.add_argument("--cellpose-cellprob-threshold", type=float, default=0.0, help="Cellpose cellprob threshold")
     args = parser.parse_args()
@@ -401,7 +402,9 @@ def main() -> None:
         masks = detect_cellpose_roi(
             rgb,
             model_type=args.cellpose_model,
+            pretrained_model=args.cellpose_pretrained,
             diameter=args.cellpose_diameter,
+            rescale=args.cellpose_rescale,
             flow_threshold=args.cellpose_flow_threshold,
             cellprob_threshold=args.cellpose_cellprob_threshold,
         )

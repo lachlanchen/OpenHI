@@ -22,7 +22,9 @@ def parse_args() -> argparse.Namespace:
     ap.add_argument("--image", type=Path, required=True, help="Input image (PNG/JPG/TIF)")
     ap.add_argument("--out-dir", type=Path, required=True, help="Output directory")
     ap.add_argument("--model", default="cyto", help="Cellpose model type (default: cyto)")
+    ap.add_argument("--pretrained-model", default="cyto", help="Cellpose pretrained model name (default: cyto)")
     ap.add_argument("--diameter", type=float, default=None, help="Cellpose diameter (omit for auto)")
+    ap.add_argument("--rescale", type=float, default=None, help="Rescale image before running (e.g., 0.5)")
     ap.add_argument("--flow-threshold", type=float, default=0.4, help="Cellpose flow threshold")
     ap.add_argument("--cellprob-threshold", type=float, default=0.0, help="Cellpose cellprob threshold")
     ap.add_argument("--largest-only", action="store_true", help="Keep only the largest mask")
@@ -45,7 +47,9 @@ def load_image(path: Path) -> np.ndarray:
 def run_cellpose(
     img: np.ndarray,
     model_type: str,
+    pretrained_model: str,
     diameter: float | None,
+    rescale: float | None,
     flow_threshold: float,
     cellprob_threshold: float,
 ) -> np.ndarray:
@@ -54,23 +58,20 @@ def run_cellpose(
     except Exception as exc:  # pragma: no cover
         raise RuntimeError("Cellpose is not installed. Install with `pip install cellpose`.") from exc
 
+    eval_kwargs = dict(
+        diameter=diameter,
+        flow_threshold=flow_threshold,
+        cellprob_threshold=cellprob_threshold,
+    )
+    if rescale is not None:
+        eval_kwargs["rescale"] = rescale
+
     if hasattr(models, "Cellpose"):
         model = models.Cellpose(model_type=model_type)
-        masks, _, _, _ = model.eval(
-            img,
-            channels=[0, 0],
-            diameter=diameter,
-            flow_threshold=flow_threshold,
-            cellprob_threshold=cellprob_threshold,
-        )
+        masks, _, _, _ = model.eval(img, channels=[0, 0], **eval_kwargs)
     elif hasattr(models, "CellposeModel"):
-        model = models.CellposeModel(model_type=model_type)
-        masks, _, _ = model.eval(
-            img,
-            diameter=diameter,
-            flow_threshold=flow_threshold,
-            cellprob_threshold=cellprob_threshold,
-        )
+        model = models.CellposeModel(pretrained_model=pretrained_model, model_type=None)
+        masks, _, _ = model.eval(img, **eval_kwargs)
     else:
         raise RuntimeError("Unsupported Cellpose API: no Cellpose or CellposeModel found.")
     return masks
@@ -111,7 +112,9 @@ def main() -> None:
     masks = run_cellpose(
         img,
         model_type=args.model,
+        pretrained_model=args.pretrained_model,
         diameter=args.diameter,
+        rescale=args.rescale,
         flow_threshold=args.flow_threshold,
         cellprob_threshold=args.cellprob_threshold,
     )
