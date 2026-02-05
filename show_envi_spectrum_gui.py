@@ -432,6 +432,9 @@ def main() -> None:
     parser.add_argument("--feature-min-matches", type=int, default=12, help="Min matches for feature ROI (default: 12)")
     parser.add_argument("--crop-to-roi", action="store_true", help="Display only the ROI region")
     parser.add_argument("--font-scale", type=float, default=1.0, help="Scale all font sizes (default: 1.0)")
+    parser.add_argument("--save-fig", type=Path, default=Path("outputs_root/envi_gui.png"),
+                        help="Save figure to this path (default: outputs_root/envi_gui.png)")
+    parser.add_argument("--no-save", action="store_true", help="Disable saving the figure")
     parser.add_argument("--cellpose", action="store_true", help="Run Cellpose to auto-detect ROI")
     parser.add_argument("--cellpose-model", default="cyto", help="Cellpose model type (default: cyto)")
     parser.add_argument("--cellpose-pretrained", default="cyto", help="Cellpose pretrained model (default: cyto)")
@@ -554,14 +557,14 @@ def main() -> None:
     start_y = (display_y0 + display_y1) // 2
     spectrum = get_pixel_spectrum(data, interleave, start_x, start_y).astype(np.float32)
 
-    fig = plt.figure(figsize=(12, 6))
-    gs = fig.add_gridspec(1, 2, width_ratios=(1.1, 1.0), wspace=0.25)
+    fig = plt.figure(figsize=(12, 6), constrained_layout=True)
+    gs = fig.add_gridspec(1, 2, width_ratios=(1.1, 1.0))
     ax_img = fig.add_subplot(gs[0, 0])
     ax_spec = fig.add_subplot(gs[0, 1])
 
     rgb_display = rgb[display_y0 : display_y1 + 1, display_x0 : display_x1 + 1]
     ax_img.imshow(rgb_display, origin="upper")
-    ax_img.set_title("RGB composite (click to view spectrum)")
+    ax_img.set_title("RGB composite")
     ax_img.set_xlabel("Sample (x)")
     ax_img.set_ylabel("Line (y)")
 
@@ -608,6 +611,11 @@ def main() -> None:
         fig.canvas.draw_idle()
 
     fig.canvas.mpl_connect("button_press_event", on_click)
+    if not args.no_save and args.save_fig is not None:
+        save_path = args.save_fig
+        save_path.parent.mkdir(parents=True, exist_ok=True)
+        fig.savefig(str(save_path), dpi=200)
+        print(f"Saved figure: {save_path}")
     plt.show()
 
 
