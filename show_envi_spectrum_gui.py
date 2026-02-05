@@ -10,11 +10,13 @@ Click on the RGB image to update the spectrum plot.
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
 
 
 def parse_number(token: str) -> Any:
@@ -67,6 +69,67 @@ def parse_envi_header(path: Path) -> Dict[str, Any]:
                 key = None
 
     return header
+
+
+def _resolve_path(raw: Any, base_dir: Path) -> Path | None:
+    if not isinstance(raw, str) or not raw.strip():
+        return None
+    candidate = Path(raw)
+    if candidate.is_absolute():
+        return candidate
+    return (base_dir / candidate).resolve()
+
+
+def load_roi_json(path: Path) -> Dict[str, Any]:
+    with path.open("r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def _clamp_bbox(bbox: Tuple[int, int, int, int], samples: int, lines: int) -> Tuple[int, int, int, int]:
+    x0, y0, x1, y1 = bbox
+    x0 = max(0, min(samples - 1, x0))
+    x1 = max(0, min(samples - 1, x1))
+    y0 = max(0, min(lines - 1, y0))
+    y1 = max(0, min(lines - 1, y1))
+    if x1 < x0:
+        x0, x1 = x1, x0
+    if y1 < y0:
+        y0, y1 = y1, y0
+    return x0, y0, x1, y1
+
+
+def bbox_from_roi(roi: Dict[str, Any], samples: int, lines: int) -> Tuple[int, int, int, int] | None:
+    bbox_rel = roi.get("bbox_rel")
+    if isinstance(bbox_rel, list) and len(bbox_rel) == 4:
+        x0_rel, y0_rel, x1_rel, y1_rel = [float(v) for v in bbox_rel]
+        x0 = int(round(x0_rel * (samples - 1)))
+        x1 = int(round(x1_rel * (samples - 1)))
+        y0 = int(round(y0_rel * (lines - 1)))
+        y1 = int(round(y1_rel * (lines - 1)))
+        return _clamp_bbox((x0, y0, x1, y1), samples, lines)
+
+    bbox_xyxy = roi.get("bbox_xyxy")
+    if isinstance(bbox_xyxy, list) and len(bbox_xyxy) == 4:
+        x0, y0, x1, y1 = [int(round(v)) for v in bbox_xyxy]
+        return _clamp_bbox((x0, y0, x1, y1), samples, lines)
+
+    return None
+
+
+def load_mask(mask_path: Path | None, target_shape: Tuple[int, int]) -> np.ndarray | None:
+    if mask_path is None or not mask_path.exists():
+        return None
+    mask_img = plt.imread(mask_path)
+    if mask_img.ndim == 3:
+        mask_img = mask_img[..., 0]
+    mask = mask_img > 0.5
+    if mask.shape == target_shape:
+        return mask
+    src_h, src_w = mask.shape
+    dst_h, dst_w = target_shape
+    y_idx = np.round(np.linspace(0, src_h - 1, dst_h)).astype(int)
+    x_idx = np.round(np.linspace(0, src_w - 1, dst_w)).astype(int)
+    return mask[np.ix_(y_idx, x_idx)]
 
 
 def dtype_from_envi(code: int, byte_order: int) -> np.dtype:
@@ -130,6 +193,42 @@ def parse_rgb_bands(value: str) -> List[int]:
     return bands
 
 
+def compute_roi_mean(
+    data: np.memmap,
+    interleave: str,
+    bands: int,
+    bbox: Tuple[int, int, int, int] | None,
+    mask: np.ndarray | None,
+) -> np.ndarray | None:
+    if mask is not None and mask.any():
+        ys, xs = np.nonzero(mask)
+        if ys.size == 0:
+            return None
+        roi_mean = np.zeros(bands, dtype=np.float32)
+        for band in range(bands):
+            if interleave == "bil":
+                roi_mean[band] = data[ys, band, xs].mean()
+            elif interleave == "bip":
+                roi_mean[band] = data[ys, xs, band].mean()
+            elif interleave == "bsq":
+                roi_mean[band] = data[band, ys, xs].mean()
+        return roi_mean
+
+    if bbox is None:
+        return None
+    x0, y0, x1, y1 = bbox
+    if interleave == "bil":
+        roi = data[y0 : y1 + 1, :, x0 : x1 + 1]
+        return roi.mean(axis=(0, 2))
+    if interleave == "bip":
+        roi = data[y0 : y1 + 1, x0 : x1 + 1, :]
+        return roi.mean(axis=(0, 1))
+    if interleave == "bsq":
+        roi = data[:, y0 : y1 + 1, x0 : x1 + 1]
+        return roi.mean(axis=(1, 2))
+    return None
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Interactive ENVI spectrum viewer")
     parser.add_argument("hdr", type=Path, help="Path to ENVI .hdr file")
@@ -147,6 +246,7 @@ def main() -> None:
         help="Low/high percentiles for RGB stretch (default: 2,98)",
     )
     parser.add_argument("--gamma", type=float, default=1.0, help="Gamma correction for RGB (default: 1.0)")
+    parser.add_argument("--roi-json", type=Path, default=None, help="Optional ROI json to overlay and average")
     args = parser.parse_args()
 
     header = parse_envi_header(args.hdr)
@@ -209,6 +309,15 @@ def main() -> None:
     start_y = lines // 2
     spectrum = get_pixel_spectrum(data, interleave, start_x, start_y).astype(np.float32)
 
+    roi_bbox = None
+    roi_mask = None
+    roi_mean = None
+    if args.roi_json is not None:
+        roi = load_roi_json(args.roi_json)
+        roi_bbox = bbox_from_roi(roi, samples, lines)
+        roi_mask = load_mask(_resolve_path(roi.get("mask_png"), args.roi_json.parent), (lines, samples))
+        roi_mean = compute_roi_mean(data, interleave, bands, roi_bbox, roi_mask)
+
     fig = plt.figure(figsize=(12, 6))
     gs = fig.add_gridspec(1, 2, width_ratios=(1.1, 1.0), wspace=0.25)
     ax_img = fig.add_subplot(gs[0, 0])
@@ -222,10 +331,28 @@ def main() -> None:
     point, = ax_img.plot([start_x], [start_y], marker="o", markersize=7, markerfacecolor="none",
                          markeredgecolor="white", markeredgewidth=1.5)
 
-    line, = ax_spec.plot(x_axis, spectrum, color="#1f77b4", linewidth=1.5)
+    line, = ax_spec.plot(x_axis, spectrum, color="#1f77b4", linewidth=1.5, label="Pixel")
+    if roi_mean is not None:
+        ax_spec.plot(x_axis, roi_mean, color="#ff7f0e", linewidth=1.6, linestyle="--", label="ROI mean")
     ax_spec.set_xlabel(x_label)
     ax_spec.set_ylabel("Intensity")
     ax_spec.set_title(f"Spectrum at (x={start_x}, y={start_y})")
+    if roi_mean is not None:
+        ax_spec.legend(loc="best", frameon=False)
+
+    if roi_mask is not None:
+        ax_img.imshow(roi_mask.astype(float), cmap="gray", alpha=0.25, origin="upper")
+    if roi_bbox is not None:
+        x0, y0, x1, y1 = roi_bbox
+        roi_patch = Rectangle(
+            (x0, y0),
+            x1 - x0 + 1,
+            y1 - y0 + 1,
+            fill=False,
+            edgecolor="#ffcc00",
+            linewidth=1.5,
+        )
+        ax_img.add_patch(roi_patch)
 
     def on_click(event) -> None:
         if event.inaxes != ax_img or event.xdata is None or event.ydata is None:
