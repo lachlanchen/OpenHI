@@ -442,16 +442,17 @@ def main() -> None:
     args = parser.parse_args()
 
     if args.font_scale and not np.isclose(args.font_scale, 1.0):
-        base = plt.rcParams["font.size"]
+        base = float(plt.rcParams["font.size"])
         scale = float(args.font_scale)
+        scaled = base * scale
         plt.rcParams.update(
             {
-                "font.size": base * scale,
-                "axes.titlesize": plt.rcParams["axes.titlesize"] * scale,
-                "axes.labelsize": plt.rcParams["axes.labelsize"] * scale,
-                "xtick.labelsize": plt.rcParams["xtick.labelsize"] * scale,
-                "ytick.labelsize": plt.rcParams["ytick.labelsize"] * scale,
-                "legend.fontsize": plt.rcParams["legend.fontsize"] * scale,
+                "font.size": scaled,
+                "axes.titlesize": scaled,
+                "axes.labelsize": scaled,
+                "xtick.labelsize": scaled,
+                "ytick.labelsize": scaled,
+                "legend.fontsize": scaled,
             }
         )
 
