@@ -431,6 +431,7 @@ def main() -> None:
     parser.add_argument("--feature-template", type=Path, default=None, help="Template image to feature-match ROI")
     parser.add_argument("--feature-min-matches", type=int, default=12, help="Min matches for feature ROI (default: 12)")
     parser.add_argument("--crop-to-roi", action="store_true", help="Display only the ROI region")
+    parser.add_argument("--font-scale", type=float, default=1.0, help="Scale all font sizes (default: 1.0)")
     parser.add_argument("--cellpose", action="store_true", help="Run Cellpose to auto-detect ROI")
     parser.add_argument("--cellpose-model", default="cyto", help="Cellpose model type (default: cyto)")
     parser.add_argument("--cellpose-pretrained", default="cyto", help="Cellpose pretrained model (default: cyto)")
@@ -439,6 +440,20 @@ def main() -> None:
     parser.add_argument("--cellpose-flow-threshold", type=float, default=0.4, help="Cellpose flow threshold")
     parser.add_argument("--cellpose-cellprob-threshold", type=float, default=0.0, help="Cellpose cellprob threshold")
     args = parser.parse_args()
+
+    if args.font_scale and not np.isclose(args.font_scale, 1.0):
+        base = plt.rcParams["font.size"]
+        scale = float(args.font_scale)
+        plt.rcParams.update(
+            {
+                "font.size": base * scale,
+                "axes.titlesize": plt.rcParams["axes.titlesize"] * scale,
+                "axes.labelsize": plt.rcParams["axes.labelsize"] * scale,
+                "xtick.labelsize": plt.rcParams["xtick.labelsize"] * scale,
+                "ytick.labelsize": plt.rcParams["ytick.labelsize"] * scale,
+                "legend.fontsize": plt.rcParams["legend.fontsize"] * scale,
+            }
+        )
 
     header = parse_envi_header(args.hdr)
     samples = int(header.get("samples"))
