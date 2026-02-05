@@ -132,6 +132,66 @@ def load_mask(mask_path: Path | None, target_shape: Tuple[int, int]) -> np.ndarr
     return mask[np.ix_(y_idx, x_idx)]
 
 
+def rgb_to_gray(rgb: np.ndarray) -> np.ndarray:
+    if rgb.ndim == 2:
+        return rgb.astype(np.float32)
+    r = rgb[..., 0].astype(np.float32)
+    g = rgb[..., 1].astype(np.float32)
+    b = rgb[..., 2].astype(np.float32)
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b
+
+
+def detect_cellpose_roi(
+    rgb: np.ndarray,
+    model_type: str,
+    diameter: float | None,
+    flow_threshold: float,
+    cellprob_threshold: float,
+) -> np.ndarray | None:
+    try:
+        from cellpose import models  # type: ignore
+    except Exception as exc:  # pragma: no cover
+        raise RuntimeError(
+            "Cellpose is not installed. Install with `pip install cellpose` in your env."
+        ) from exc
+
+    img = np.asarray(rgb, dtype=np.float32)
+    if img.max() > 1.5:
+        img = img / 255.0
+    gray = rgb_to_gray(img)
+    model = models.Cellpose(model_type=model_type)
+    masks, _, _, _ = model.eval(
+        gray,
+        channels=[0, 0],
+        diameter=diameter,
+        flow_threshold=flow_threshold,
+        cellprob_threshold=cellprob_threshold,
+    )
+    if masks is None or masks.max() == 0:
+        return None
+    return masks
+
+
+def mask_to_largest(mask: np.ndarray) -> np.ndarray | None:
+    labels, counts = np.unique(mask, return_counts=True)
+    labels = labels[labels != 0]
+    if labels.size == 0:
+        return None
+    counts = counts[1:] if counts.size > labels.size else counts
+    largest_label = labels[np.argmax(counts)]
+    return mask == largest_label
+
+
+def bbox_from_mask(mask: np.ndarray) -> Tuple[int, int, int, int] | None:
+    ys, xs = np.nonzero(mask)
+    if ys.size == 0:
+        return None
+    x0 = int(xs.min())
+    x1 = int(xs.max())
+    y0 = int(ys.min())
+    y1 = int(ys.max())
+    return x0, y0, x1, y1
+
 def dtype_from_envi(code: int, byte_order: int) -> np.dtype:
     dtype_map = {
         1: np.uint8,
@@ -247,6 +307,11 @@ def main() -> None:
     )
     parser.add_argument("--gamma", type=float, default=1.0, help="Gamma correction for RGB (default: 1.0)")
     parser.add_argument("--roi-json", type=Path, default=None, help="Optional ROI json to overlay and average")
+    parser.add_argument("--cellpose", action="store_true", help="Run Cellpose to auto-detect ROI")
+    parser.add_argument("--cellpose-model", default="cyto", help="Cellpose model type (default: cyto)")
+    parser.add_argument("--cellpose-diameter", type=float, default=None, help="Cellpose diameter; omit for auto")
+    parser.add_argument("--cellpose-flow-threshold", type=float, default=0.4, help="Cellpose flow threshold")
+    parser.add_argument("--cellpose-cellprob-threshold", type=float, default=0.0, help="Cellpose cellprob threshold")
     args = parser.parse_args()
 
     header = parse_envi_header(args.hdr)
@@ -317,6 +382,19 @@ def main() -> None:
         roi_bbox = bbox_from_roi(roi, samples, lines)
         roi_mask = load_mask(_resolve_path(roi.get("mask_png"), args.roi_json.parent), (lines, samples))
         roi_mean = compute_roi_mean(data, interleave, bands, roi_bbox, roi_mask)
+    elif args.cellpose:
+        masks = detect_cellpose_roi(
+            rgb,
+            model_type=args.cellpose_model,
+            diameter=args.cellpose_diameter,
+            flow_threshold=args.cellpose_flow_threshold,
+            cellprob_threshold=args.cellpose_cellprob_threshold,
+        )
+        if masks is not None:
+            roi_mask = mask_to_largest(masks)
+            if roi_mask is not None:
+                roi_bbox = bbox_from_mask(roi_mask)
+                roi_mean = compute_roi_mean(data, interleave, bands, roi_bbox, roi_mask)
 
     fig = plt.figure(figsize=(12, 6))
     gs = fig.add_gridspec(1, 2, width_ratios=(1.1, 1.0), wspace=0.25)
