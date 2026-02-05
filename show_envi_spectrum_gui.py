@@ -159,14 +159,29 @@ def detect_cellpose_roi(
     if img.max() > 1.5:
         img = img / 255.0
     gray = rgb_to_gray(img)
-    model = models.Cellpose(model_type=model_type)
-    masks, _, _, _ = model.eval(
-        gray,
-        channels=[0, 0],
-        diameter=diameter,
-        flow_threshold=flow_threshold,
-        cellprob_threshold=cellprob_threshold,
-    )
+    if hasattr(models, "Cellpose"):
+        model = models.Cellpose(model_type=model_type)
+        masks, _, _, _ = model.eval(
+            gray,
+            channels=[0, 0],
+            diameter=diameter,
+            flow_threshold=flow_threshold,
+            cellprob_threshold=cellprob_threshold,
+        )
+    elif hasattr(models, "CellposeModel"):
+        model = models.CellposeModel(model_type=model_type)
+        if gray.ndim == 2:
+            img_in = np.stack([gray, gray, gray], axis=-1)
+        else:
+            img_in = gray
+        masks, _, _ = model.eval(
+            img_in,
+            diameter=diameter,
+            flow_threshold=flow_threshold,
+            cellprob_threshold=cellprob_threshold,
+        )
+    else:
+        raise RuntimeError("Unsupported Cellpose API: no Cellpose or CellposeModel found.")
     if masks is None or masks.max() == 0:
         return None
     return masks
