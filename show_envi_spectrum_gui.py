@@ -159,6 +159,87 @@ def maybe_downsample(img: np.ndarray, scale: float | None) -> Tuple[np.ndarray, 
     return resize_nearest(img, new_h, new_w), float(scale)
 
 
+def match_feature_roi(search_rgb: np.ndarray, template_path: Path, min_matches: int = 12) -> Tuple[int, int, int, int] | None:
+    try:
+        import cv2  # type: ignore
+    except Exception as exc:  # pragma: no cover
+        raise RuntimeError(
+            "OpenCV is required for feature matching. Install with `pip install opencv-python-headless`."
+        ) from exc
+
+    templ = cv2.imread(str(template_path), cv2.IMREAD_COLOR)
+    if templ is None:
+        raise FileNotFoundError(template_path)
+
+    search = search_rgb
+    if search.dtype != np.uint8:
+        search = (np.clip(search, 0.0, 1.0) * 255.0).astype(np.uint8)
+    search_bgr = search[:, :, ::-1]
+
+    templ_gray = cv2.cvtColor(templ, cv2.COLOR_BGR2GRAY)
+    search_gray = cv2.cvtColor(search_bgr, cv2.COLOR_BGR2GRAY)
+
+    orb = cv2.ORB_create(nfeatures=1500)
+    kp1, des1 = orb.detectAndCompute(templ_gray, None)
+    kp2, des2 = orb.detectAndCompute(search_gray, None)
+    if des1 is None or des2 is None:
+        return None
+
+    bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=False)
+    matches = bf.knnMatch(des1, des2, k=2)
+    good = []
+    for m, n in matches:
+        if m.distance < 0.75 * n.distance:
+            good.append(m)
+    if len(good) < min_matches:
+        return None
+
+    src_pts = np.float32([kp1[m.queryIdx].pt for m in good]).reshape(-1, 1, 2)
+    dst_pts = np.float32([kp2[m.trainIdx].pt for m in good]).reshape(-1, 1, 2)
+    H, _ = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
+    if H is None:
+        return None
+
+    h, w = templ_gray.shape[:2]
+    corners = np.float32([[0, 0], [w - 1, 0], [w - 1, h - 1], [0, h - 1]]).reshape(-1, 1, 2)
+    warped = cv2.perspectiveTransform(corners, H).reshape(-1, 2)
+    x0 = int(np.floor(warped[:, 0].min()))
+    x1 = int(np.ceil(warped[:, 0].max()))
+    y0 = int(np.floor(warped[:, 1].min()))
+    y1 = int(np.ceil(warped[:, 1].max()))
+    Hs, Ws = search_gray.shape
+    x0, y0, x1, y1 = _clamp_bbox((x0, y0, x1, y1), Ws, Hs)
+    return x0, y0, x1, y1
+
+
+def match_template_roi(search_rgb: np.ndarray, template_path: Path) -> Tuple[int, int, int, int] | None:
+    try:
+        import cv2  # type: ignore
+    except Exception as exc:  # pragma: no cover
+        raise RuntimeError(
+            "OpenCV is required for template matching. Install with `pip install opencv-python-headless`."
+        ) from exc
+
+    templ = cv2.imread(str(template_path), cv2.IMREAD_COLOR)
+    if templ is None:
+        raise FileNotFoundError(template_path)
+
+    search = search_rgb
+    if search.dtype != np.uint8:
+        search = (np.clip(search, 0.0, 1.0) * 255.0).astype(np.uint8)
+    search_bgr = search[:, :, ::-1]
+
+    templ_gray = cv2.cvtColor(templ, cv2.COLOR_BGR2GRAY)
+    search_gray = cv2.cvtColor(search_bgr, cv2.COLOR_BGR2GRAY)
+    res = cv2.matchTemplate(search_gray, templ_gray, cv2.TM_CCOEFF_NORMED)
+    _, _, _, max_loc = cv2.minMaxLoc(res)
+    x0, y0 = int(max_loc[0]), int(max_loc[1])
+    h, w = templ_gray.shape[:2]
+    x1, y1 = x0 + w - 1, y0 + h - 1
+    Hs, Ws = search_gray.shape
+    return _clamp_bbox((x0, y0, x1, y1), Ws, Hs)
+
+
 def detect_cellpose_roi(
     rgb: np.ndarray,
     model_type: str,
@@ -347,6 +428,9 @@ def main() -> None:
     )
     parser.add_argument("--gamma", type=float, default=1.0, help="Gamma correction for RGB (default: 1.0)")
     parser.add_argument("--roi-json", type=Path, default=None, help="Optional ROI json to overlay and average")
+    parser.add_argument("--feature-template", type=Path, default=None, help="Template image to feature-match ROI")
+    parser.add_argument("--feature-min-matches", type=int, default=12, help="Min matches for feature ROI (default: 12)")
+    parser.add_argument("--crop-to-roi", action="store_true", help="Display only the ROI region")
     parser.add_argument("--cellpose", action="store_true", help="Run Cellpose to auto-detect ROI")
     parser.add_argument("--cellpose-model", default="cyto", help="Cellpose model type (default: cyto)")
     parser.add_argument("--cellpose-pretrained", default="cyto", help="Cellpose pretrained model (default: cyto)")
@@ -412,14 +496,21 @@ def main() -> None:
         x_axis = np.arange(bands)
         x_label = "Band index"
 
-    start_x = samples // 2
-    start_y = lines // 2
-    spectrum = get_pixel_spectrum(data, interleave, start_x, start_y).astype(np.float32)
+    display_x0 = 0
+    display_y0 = 0
+    display_x1 = samples - 1
+    display_y1 = lines - 1
 
     roi_bbox = None
     roi_mask = None
     roi_mean = None
-    if args.roi_json is not None:
+    if args.feature_template is not None:
+        roi_bbox = match_feature_roi(rgb, args.feature_template, min_matches=args.feature_min_matches)
+        if roi_bbox is None:
+            roi_bbox = match_template_roi(rgb, args.feature_template)
+        if roi_bbox is not None:
+            roi_mean = compute_roi_mean(data, interleave, bands, roi_bbox, None)
+    elif args.roi_json is not None:
         roi = load_roi_json(args.roi_json)
         roi_bbox = bbox_from_roi(roi, samples, lines)
         roi_mask = load_mask(_resolve_path(roi.get("mask_png"), args.roi_json.parent), (lines, samples))
@@ -440,17 +531,25 @@ def main() -> None:
                 roi_bbox = bbox_from_mask(roi_mask)
                 roi_mean = compute_roi_mean(data, interleave, bands, roi_bbox, roi_mask)
 
+    if roi_bbox is not None and (args.crop_to_roi or args.feature_template is not None):
+        display_x0, display_y0, display_x1, display_y1 = roi_bbox
+
+    start_x = (display_x0 + display_x1) // 2
+    start_y = (display_y0 + display_y1) // 2
+    spectrum = get_pixel_spectrum(data, interleave, start_x, start_y).astype(np.float32)
+
     fig = plt.figure(figsize=(12, 6))
     gs = fig.add_gridspec(1, 2, width_ratios=(1.1, 1.0), wspace=0.25)
     ax_img = fig.add_subplot(gs[0, 0])
     ax_spec = fig.add_subplot(gs[0, 1])
 
-    ax_img.imshow(rgb, origin="upper")
+    rgb_display = rgb[display_y0 : display_y1 + 1, display_x0 : display_x1 + 1]
+    ax_img.imshow(rgb_display, origin="upper")
     ax_img.set_title("RGB composite (click to view spectrum)")
     ax_img.set_xlabel("Sample (x)")
     ax_img.set_ylabel("Line (y)")
 
-    point, = ax_img.plot([start_x], [start_y], marker="o", markersize=7, markerfacecolor="none",
+    point, = ax_img.plot([start_x - display_x0], [start_y - display_y0], marker="o", markersize=7, markerfacecolor="none",
                          markeredgecolor="white", markeredgewidth=1.5)
 
     line, = ax_spec.plot(x_axis, spectrum, color="#1f77b4", linewidth=1.5, label="Pixel")
@@ -463,11 +562,12 @@ def main() -> None:
         ax_spec.legend(loc="best", frameon=False)
 
     if roi_mask is not None:
-        ax_img.imshow(roi_mask.astype(float), cmap="gray", alpha=0.25, origin="upper")
-    if roi_bbox is not None:
+        mask_crop = roi_mask[display_y0 : display_y1 + 1, display_x0 : display_x1 + 1]
+        ax_img.imshow(mask_crop.astype(float), cmap="autumn", alpha=0.25, origin="upper")
+    if roi_bbox is not None and (display_x0, display_y0, display_x1, display_y1) != roi_bbox:
         x0, y0, x1, y1 = roi_bbox
         roi_patch = Rectangle(
-            (x0, y0),
+            (x0 - display_x0, y0 - display_y0),
             x1 - x0 + 1,
             y1 - y0 + 1,
             fill=False,
@@ -479,16 +579,16 @@ def main() -> None:
     def on_click(event) -> None:
         if event.inaxes != ax_img or event.xdata is None or event.ydata is None:
             return
-        x = int(round(event.xdata))
-        y = int(round(event.ydata))
-        if x < 0 or x >= samples or y < 0 or y >= lines:
+        x = int(round(event.xdata)) + display_x0
+        y = int(round(event.ydata)) + display_y0
+        if x < display_x0 or x > display_x1 or y < display_y0 or y > display_y1:
             return
         spectrum_local = get_pixel_spectrum(data, interleave, x, y).astype(np.float32)
         line.set_ydata(spectrum_local)
         ax_spec.relim()
         ax_spec.autoscale_view(scalex=False, scaley=True)
         ax_spec.set_title(f"Spectrum at (x={x}, y={y})")
-        point.set_data([x], [y])
+        point.set_data([x - display_x0], [y - display_y0])
         fig.canvas.draw_idle()
 
     fig.canvas.mpl_connect("button_press_event", on_click)
