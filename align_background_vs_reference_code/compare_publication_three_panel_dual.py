@@ -143,9 +143,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--auto_neg_min", type=float, default=0.1)
     parser.add_argument("--auto_neg_max", type=float, default=3.0)
     parser.add_argument("--plateau_frac", type=float, default=0.05)
-    parser.add_argument("--align-sample-plateau", action="store_true", help="Affine-align sample plateaus to GT")
-    parser.add_argument("--align-blank-plateau", action="store_true", help="Affine-align blank plateaus to GT")
-    parser.add_argument("--plateau-align-frac", type=float, default=0.08, help="Fraction per-edge for plateau align")
+    parser.add_argument("--sample-shift-nm", type=float, default=0.0, help="Shift sample curve in wavelength (nm)")
+    parser.add_argument("--auto-shift-sample-left-edge", action="store_true",
+                        help="Shift sample so its left edge matches GT left edge")
     parser.add_argument("--params-npz", type=Path, default=None, help="Optional parameter NPZ for compensation")
     parser.add_argument("--xlim", type=float, nargs=2, default=(300.0, 900.0))
     parser.add_argument("--suffix", type=str, default="", help="Suffix appended to output filename")
@@ -182,30 +182,10 @@ def load_gt(gt_files):
     return curves
 
 
-def align_series_to_ref(
-    wl_ref: np.ndarray,
-    ref: np.ndarray,
-    wl_target: np.ndarray,
-    target: np.ndarray,
-    frac: float,
-) -> Tuple[np.ndarray, Tuple[float, float]]:
-    if wl_target.size == 0 or wl_ref.size == 0:
-        return target, (1.0, 0.0)
-    wl_min = max(float(np.min(wl_ref)), float(np.min(wl_target)))
-    wl_max = min(float(np.max(wl_ref)), float(np.max(wl_target)))
-    mask = (wl_ref >= wl_min) & (wl_ref <= wl_max)
-    wl_ref_use = wl_ref[mask]
-    ref_use = ref[mask]
-    if wl_ref_use.size < 4:
-        return target, (1.0, 0.0)
-    target_interp = np.interp(wl_ref_use, wl_target, target)
-    n = max(3, int(round(len(wl_ref_use) * frac)))
-    edge_idx = np.concatenate([np.arange(n), np.arange(len(wl_ref_use) - n, len(wl_ref_use))])
-    A = np.stack([target_interp[edge_idx], np.ones_like(target_interp[edge_idx])], axis=1)
-    coeff, *_ = np.linalg.lstsq(A, ref_use[edge_idx], rcond=None)
-    a, c = float(coeff[0]), float(coeff[1])
-    aligned = a * target + c
-    return aligned, (a, c)
+def compute_left_edge_idx(series: np.ndarray) -> int:
+    smooth = moving_average(series, max(21, int(len(series) // 200) | 1))
+    region = detect_active_region(smooth)
+    return int(region.start_idx)
 
 
 def main() -> None:
@@ -273,21 +253,19 @@ def main() -> None:
     blank_norm, blank_region = normalise_series(cum_blank)
     sample_norm, sample_region = normalise_series(cum_sample)
 
-    blank_align = (1.0, 0.0)
-    sample_align = (1.0, 0.0)
-    if args.align_blank_plateau:
-        blank_norm, blank_align = align_series_to_ref(
-            wl_gt, gt_norm, wl_blank, blank_norm, frac=args.plateau_align_frac
-        )
-    if args.align_sample_plateau:
-        sample_norm, sample_align = align_series_to_ref(
-            wl_gt, gt_norm, wl_sample, sample_norm, frac=args.plateau_align_frac
-        )
-
     eps = 1e-3
     log_gt = np.log(np.clip(gt_norm, eps, None))
     log_blank = np.log(np.clip(blank_norm, eps, None))
     log_sample = np.log(np.clip(sample_norm, eps, None))
+
+    sample_shift_nm = float(args.sample_shift_nm)
+    if args.auto_shift_sample_left_edge:
+        idx = compute_left_edge_idx(cum_sample)
+        sample_left_nm = float(wl_sample[idx])
+        sample_shift_nm += float(gt_start_nm - sample_left_nm)
+    if not np.isclose(sample_shift_nm, 0.0):
+        wl_sample = wl_sample + sample_shift_nm
+        wl_bins_sample = wl_bins_sample + sample_shift_nm
 
     dlog_gt = np.gradient(log_gt, wl_gt)
     dlog_gt_norm = dlog_gt / np.max(np.abs(dlog_gt)) if np.max(np.abs(dlog_gt)) > 0 else dlog_gt
@@ -351,8 +329,7 @@ def main() -> None:
         "intercept_nm": float(intercept),
         "blank_neg_scale": float(neg_blank),
         "sample_neg_scale": float(neg_sample),
-        "blank_align": {"scale": float(blank_align[0]), "offset": float(blank_align[1])},
-        "sample_align": {"scale": float(sample_align[0]), "offset": float(sample_align[1])},
+        "sample_shift_nm": float(sample_shift_nm),
         "blank_active_window_ms": [float(time_ms_blank[region_blank.start_idx]), float(time_ms_blank[region_blank.end_idx])],
         "sample_active_window_ms": [float(time_ms_sample[sample_region[0]]), float(time_ms_sample[sample_region[1]])],
     }
