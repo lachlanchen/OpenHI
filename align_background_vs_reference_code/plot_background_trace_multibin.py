@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Plot overlapping sliding-window background traces for multiple bin sizes.
+"""Plot non-overlapping window background traces for multiple bin sizes.
 
 Example:
   python align_background_vs_reference_code/plot_background_trace_multibin.py \
@@ -121,15 +121,16 @@ def parse_args() -> argparse.Namespace:
         / "scan_angle_20_lumileds/angle_20_blank_20250922_170433/"
         "angle_20_blank_event_20250922_170433_segments/Scan_1_Forward_events.npz"
     )
-    ap = argparse.ArgumentParser(description="Plot overlapping background traces for multiple windows")
+    ap = argparse.ArgumentParser(description="Plot non-overlapping background traces for multiple windows")
     ap.add_argument("--segment", type=Path, default=default_segment, help="Segment NPZ to analyse")
     ap.add_argument("--window_ms", type=float, nargs="+", default=[1, 5, 25, 50], help="Window sizes in ms")
-    ap.add_argument("--stride_ms", type=float, default=1.0, help="Sliding stride in ms")
+    ap.add_argument("--stride_ms", type=float, default=None, help="Stride in ms (default: equals window)")
     ap.add_argument("--sensor_width", type=int, default=1280)
     ap.add_argument("--sensor_height", type=int, default=720)
     ap.add_argument("--pos_scale", type=float, default=1.0)
     ap.add_argument("--smooth_div", type=float, default=200.0, help="Smoothing divisor (higher = less smoothing)")
     ap.add_argument("--output_root", type=Path, default=REPO_ROOT / "align_background_vs_reference_code")
+    ap.add_argument("--font-scale", type=float, default=1.2, help="Font scale for publication styling")
     ap.add_argument("--show", action="store_true", help="Show plot")
     return ap.parse_args()
 
@@ -150,14 +151,31 @@ def main() -> None:
     sensor_area = float(args.sensor_width * args.sensor_height)
 
     out_dir = ensure_output_dir(args.output_root)
-    fig, ax = plt.subplots(figsize=(10.5, 4.0))
+    if args.font_scale and not np.isclose(args.font_scale, 1.0):
+        scale = float(args.font_scale)
+        base = float(plt.rcParams["font.size"])
+        scaled = base * scale
+        plt.rcParams.update(
+            {
+                "font.size": scaled,
+                "axes.titlesize": scaled,
+                "axes.labelsize": scaled,
+                "xtick.labelsize": scaled,
+                "ytick.labelsize": scaled,
+                "legend.fontsize": scaled * 0.9,
+                "lines.linewidth": 2.5,
+            }
+        )
+
+    fig, ax = plt.subplots(figsize=(12.0, 4.6))
 
     for window_ms in args.window_ms:
+        stride_ms = float(args.stride_ms) if args.stride_ms is not None else float(window_ms)
         centers_ms, series = build_window_series(
             t_comp,
             p,
             window_ms=float(window_ms),
-            stride_ms=float(args.stride_ms),
+            stride_ms=stride_ms,
             pos_scale=float(args.pos_scale),
             sensor_area=sensor_area,
         )
@@ -171,8 +189,8 @@ def main() -> None:
 
     ax.set_xlabel("Time (ms)")
     ax.set_ylabel("Normalised net event rate")
-    ax.set_title("Background trace (overlapping sliding windows)")
-    ax.grid(alpha=0.3)
+    ax.set_title("Background trace (non-overlapping windows)")
+    ax.grid(False)
     ax.legend(loc="upper right")
 
     out_name = f"background_trace_multibin_{segment.stem}.png"
