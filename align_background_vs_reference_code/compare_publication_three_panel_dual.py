@@ -143,9 +143,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--auto_neg_min", type=float, default=0.1)
     parser.add_argument("--auto_neg_max", type=float, default=3.0)
     parser.add_argument("--plateau_frac", type=float, default=0.05)
-    parser.add_argument("--sample-shift-nm", type=float, default=0.0, help="Shift sample curve in wavelength (nm)")
+    parser.add_argument("--sample-shift-nm", type=float, default=0.0, help="Manual shift for sample curve (nm)")
     parser.add_argument("--auto-shift-sample-left-edge", action="store_true",
                         help="Shift sample so its left edge matches GT left edge")
+    parser.add_argument("--auto-shift-sample-corr", action="store_true",
+                        help="Shift sample to maximise correlation with GT derivative")
+    parser.add_argument("--shift-range", type=float, default=120.0, help="Search range (+/- nm) for auto shift")
+    parser.add_argument("--shift-step", type=float, default=1.0, help="Search step (nm) for auto shift")
     parser.add_argument("--params-npz", type=Path, default=None, help="Optional parameter NPZ for compensation")
     parser.add_argument("--xlim", type=float, nargs=2, default=(300.0, 900.0))
     parser.add_argument("--suffix", type=str, default="", help="Suffix appended to output filename")
@@ -186,6 +190,43 @@ def compute_left_edge_idx(series: np.ndarray) -> int:
     smooth = moving_average(series, max(21, int(len(series) // 200) | 1))
     region = detect_active_region(smooth)
     return int(region.start_idx)
+
+
+def auto_shift_by_correlation(
+    wl_gt: np.ndarray,
+    dlog_gt: np.ndarray,
+    wl_sample: np.ndarray,
+    dlog_sample: np.ndarray,
+    shift_range: float,
+    shift_step: float,
+) -> Tuple[float, float]:
+    wl_min = max(float(np.min(wl_gt)), float(np.min(wl_sample)))
+    wl_max = min(float(np.max(wl_gt)), float(np.max(wl_sample)))
+    if wl_max <= wl_min:
+        return 0.0, 0.0
+
+    grid = np.arange(wl_min, wl_max + shift_step, shift_step)
+    gt = np.interp(grid, wl_gt, dlog_gt)
+
+    gt = gt - float(np.mean(gt))
+    gt_norm = np.linalg.norm(gt)
+    if gt_norm <= 0:
+        return 0.0, 0.0
+
+    shifts = np.arange(-shift_range, shift_range + shift_step, shift_step)
+    best_shift = 0.0
+    best_corr = -np.inf
+    for s in shifts:
+        samp = np.interp(grid, wl_sample + s, dlog_sample)
+        samp = samp - float(np.mean(samp))
+        denom = np.linalg.norm(samp) * gt_norm
+        if denom <= 0:
+            continue
+        corr = float(np.dot(gt, samp) / denom)
+        if corr > best_corr:
+            best_corr = corr
+            best_shift = float(s)
+    return best_shift, best_corr
 
 
 def main() -> None:
@@ -255,20 +296,31 @@ def main() -> None:
 
     eps = 1e-3
     log_gt = np.log(np.clip(gt_norm, eps, None))
+    dlog_gt = np.gradient(log_gt, wl_gt)
+    dlog_gt_norm = dlog_gt / np.max(np.abs(dlog_gt)) if np.max(np.abs(dlog_gt)) > 0 else dlog_gt
     log_blank = np.log(np.clip(blank_norm, eps, None))
     log_sample = np.log(np.clip(sample_norm, eps, None))
 
+    dlog_sample = np.gradient(log_sample, wl_sample)
+    if np.max(np.abs(dlog_sample)) > 0:
+        dlog_sample = dlog_sample / np.max(np.abs(dlog_sample))
+
     sample_shift_nm = float(args.sample_shift_nm)
+    corr_shift = 0.0
+    corr_val = 0.0
     if args.auto_shift_sample_left_edge:
         idx = compute_left_edge_idx(cum_sample)
         sample_left_nm = float(wl_sample[idx])
         sample_shift_nm += float(gt_start_nm - sample_left_nm)
+    if args.auto_shift_sample_corr:
+        corr_shift, corr_val = auto_shift_by_correlation(
+            wl_gt, dlog_gt_norm, wl_sample, dlog_sample, args.shift_range, args.shift_step
+        )
+        sample_shift_nm += corr_shift
+
     if not np.isclose(sample_shift_nm, 0.0):
         wl_sample = wl_sample + sample_shift_nm
         wl_bins_sample = wl_bins_sample + sample_shift_nm
-
-    dlog_gt = np.gradient(log_gt, wl_gt)
-    dlog_gt_norm = dlog_gt / np.max(np.abs(dlog_gt)) if np.max(np.abs(dlog_gt)) > 0 else dlog_gt
 
     events_blank = normalise_events(net_bin_blank)
     events_sample = normalise_events(net_bin_sample)
@@ -330,6 +382,7 @@ def main() -> None:
         "blank_neg_scale": float(neg_blank),
         "sample_neg_scale": float(neg_sample),
         "sample_shift_nm": float(sample_shift_nm),
+        "sample_shift_corr": {"shift_nm": float(corr_shift), "corr": float(corr_val)},
         "blank_active_window_ms": [float(time_ms_blank[region_blank.start_idx]), float(time_ms_blank[region_blank.end_idx])],
         "sample_active_window_ms": [float(time_ms_sample[sample_region[0]]), float(time_ms_sample[sample_region[1]])],
     }

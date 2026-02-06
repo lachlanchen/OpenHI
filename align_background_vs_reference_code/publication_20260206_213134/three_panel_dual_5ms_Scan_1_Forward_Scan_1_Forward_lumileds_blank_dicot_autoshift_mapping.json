@@ -1,0 +1,24 @@
+{
+  "segment_blank": "scan_angle_20_lumileds/angle_20_blank_20250922_170433/angle_20_blank_event_20250922_170433_segments/Scan_1_Forward_events.npz",
+  "segment_sample": "scan_angle_20_lumileds/angle_20_sanqin_20250922_170630/angle_20_sanqin_event_20250922_170630_segments/Scan_1_Forward_events.npz",
+  "gt_files": [
+    "reference_spectrum_lumileds/USB2F042671_16-04-56-391.txt"
+  ],
+  "slope_nm_per_ms": 0.6520341365461847,
+  "intercept_nm": 179.51557429718878,
+  "blank_neg_scale": 1.2601707100868225,
+  "sample_neg_scale": 1.3130286097526547,
+  "sample_shift_nm": -49.0,
+  "sample_shift_corr": {
+    "shift_nm": -49.0,
+    "corr": 0.7321112505565942
+  },
+  "blank_active_window_ms": [
+    364.0,
+    862.0
+  ],
+  "sample_active_window_ms": [
+    436.0,
+    932.0
+  ]
+}
