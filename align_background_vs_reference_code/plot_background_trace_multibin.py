@@ -123,7 +123,7 @@ def parse_args() -> argparse.Namespace:
     )
     ap = argparse.ArgumentParser(description="Plot non-overlapping background traces for multiple windows")
     ap.add_argument("--segment", type=Path, default=default_segment, help="Segment NPZ to analyse")
-    ap.add_argument("--window_ms", type=float, nargs="+", default=[1, 5, 25, 50], help="Window sizes in ms")
+    ap.add_argument("--window_ms", type=float, nargs="+", default=[1, 2.5, 5, 25, 50], help="Window sizes in ms")
     ap.add_argument("--stride_ms", type=float, default=None, help="Stride in ms (default: equals window)")
     ap.add_argument("--sensor_width", type=int, default=1280)
     ap.add_argument("--sensor_height", type=int, default=720)

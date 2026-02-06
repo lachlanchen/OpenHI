@@ -17,7 +17,7 @@ non‑overlapping sliding‑window traces for several bin sizes in a single plot
 ```bash
 python align_background_vs_reference_code/plot_background_trace_multibin.py \
   --segment scan_angle_20_lumileds/angle_20_blank_20250922_170433/angle_20_blank_event_20250922_170433_segments/Scan_1_Forward_events.npz \
-  --window_ms 1 5 25 50 \
+  --window_ms 1 2.5 5 25 50 \
   --sensor_width 1280 --sensor_height 720 \
   --output_root align_background_vs_reference_code
 ```
@@ -29,4 +29,4 @@ Notes:
 
 ## Output
 
-- `align_background_vs_reference_code/publication_20260206_221154/background_trace_multibin_Scan_1_Forward_events.png`
+- `align_background_vs_reference_code/publication_20260206_221739/background_trace_multibin_Scan_1_Forward_events.png`
