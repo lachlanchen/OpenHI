@@ -207,6 +207,67 @@ def compute_metrics(ref_wl: np.ndarray, ref: np.ndarray, pred_wl: np.ndarray, pr
     }
 
 
+def compute_shift_invariant_metrics(
+    ref_wl: np.ndarray,
+    ref: np.ndarray,
+    pred_wl: np.ndarray,
+    pred: np.ndarray,
+    shift_range: float = 120.0,
+    shift_step: float = 1.0,
+) -> Dict[str, float]:
+    wl_min = max(float(np.min(ref_wl)), float(np.min(pred_wl)))
+    wl_max = min(float(np.max(ref_wl)), float(np.max(pred_wl)))
+    if wl_max <= wl_min:
+        return {
+            "best_shift_nm": float("nan"),
+            "max_corr": float("nan"),
+            "nrmse_after_shift": float("nan"),
+            "rmse_after_shift": float("nan"),
+        }
+
+    n = int(max(len(ref_wl), len(pred_wl), 200))
+    grid = np.linspace(wl_min, wl_max, n)
+    ref_i = np.interp(grid, ref_wl, ref)
+    ref_mean = float(np.mean(ref_i))
+    ref_std = float(np.std(ref_i))
+    if ref_std <= 0:
+        return {
+            "best_shift_nm": float("nan"),
+            "max_corr": float("nan"),
+            "nrmse_after_shift": float("nan"),
+            "rmse_after_shift": float("nan"),
+        }
+
+    shifts = np.arange(-shift_range, shift_range + shift_step, shift_step)
+    best_shift = 0.0
+    best_corr = -np.inf
+    best_rmse = float("inf")
+    best_nrmse = float("inf")
+    denom = float(np.max(ref_i) - np.min(ref_i))
+
+    for s in shifts:
+        pred_i = np.interp(grid, pred_wl + s, pred)
+        pred_std = float(np.std(pred_i))
+        if pred_std <= 0:
+            continue
+        corr = float(np.corrcoef(ref_i, pred_i)[0, 1])
+        if corr > best_corr:
+            diff = pred_i - ref_i
+            rmse = float(np.sqrt(np.mean(diff ** 2)))
+            nrmse = float(rmse / denom) if denom > 0 else float("nan")
+            best_corr = corr
+            best_shift = float(s)
+            best_rmse = rmse
+            best_nrmse = nrmse
+
+    return {
+        "best_shift_nm": best_shift,
+        "max_corr": best_corr,
+        "rmse_after_shift": best_rmse,
+        "nrmse_after_shift": best_nrmse,
+    }
+
+
 def build_events_norm(net_bin: np.ndarray) -> np.ndarray:
     if net_bin.size:
         smooth_events = moving_average(net_bin, max(5, len(net_bin) // 200 | 1))
@@ -256,6 +317,11 @@ def run_dataset(
         "cumulative": compute_metrics(wl_gt, gt_norm, wl_recon, recon_norm),
         "log": compute_metrics(wl_gt, log_gt, wl_recon, log_recon),
         "derivative_vs_events": compute_metrics(wl_gt, dlog_gt_norm, wl_bins, events_norm),
+        "shift_invariant": {
+            "cumulative": compute_shift_invariant_metrics(wl_gt, gt_norm, wl_recon, recon_norm),
+            "log": compute_shift_invariant_metrics(wl_gt, log_gt, wl_recon, log_recon),
+            "derivative_vs_events": compute_shift_invariant_metrics(wl_gt, dlog_gt_norm, wl_bins, events_norm),
+        },
     }
 
     out_dir = args.output_root if args.output_root is not None else ensure_output_dir(REPO_ROOT / "align_background_vs_reference_code")

@@ -1,0 +1,114 @@
+{
+  "2835": {
+    "segment_npz": "/home/lachlan/ProjectsLFS/nhi_reconstruction/scan_angle_20_led_2835b/angle_20_blank_2835_20250925_184747/angle_20_blank_2835_event_20250925_184747_segments/Scan_1_Forward_events.npz",
+    "gt_files": [
+      "/home/lachlan/ProjectsLFS/nhi_reconstruction/reference_spectrum_2835/USB2F042671_16-05-20-488.txt",
+      "/home/lachlan/ProjectsLFS/nhi_reconstruction/reference_spectrum_2835/USB2F042671_16-05-22-288.txt"
+    ],
+    "slope_nm_per_ms": 0.5094015873015872,
+    "intercept_nm": 248.094326984127,
+    "neg_scale": 1.2255256891250612,
+    "metrics": {
+      "cumulative": {
+        "pearson_r": 0.9516643723966627,
+        "spearman_r": 0.9668877729480247,
+        "rmse": 0.16089591853799093,
+        "nrmse": 0.16082340745693235,
+        "mae": 0.09696848149482327,
+        "r2": 0.7768544892382057
+      },
+      "log": {
+        "pearson_r": 0.9946267510184773,
+        "spearman_r": 0.9761220716400756,
+        "rmse": 0.32980117447527824,
+        "nrmse": 0.047743668286547206,
+        "mae": 0.22006793800497293,
+        "r2": 0.9850064824377861
+      },
+      "derivative_vs_events": {
+        "pearson_r": 0.7150845311470139,
+        "spearman_r": 0.6984179430390967,
+        "rmse": 0.15776414958849086,
+        "nrmse": 0.09823578135314225,
+        "mae": 0.08379354768078225,
+        "r2": 0.2952578686820716
+      },
+      "shift_invariant": {
+        "cumulative": {
+          "best_shift_nm": -6.0,
+          "max_corr": 0.9544230010388173,
+          "rmse_after_shift": 0.15842985385342193,
+          "nrmse_after_shift": 0.15835845415553493
+        },
+        "log": {
+          "best_shift_nm": -2.0,
+          "max_corr": 0.9950952358175246,
+          "rmse_after_shift": 0.318709406682677,
+          "nrmse_after_shift": 0.04613796847955316
+        },
+        "derivative_vs_events": {
+          "best_shift_nm": -9.0,
+          "max_corr": 0.8317495584516685,
+          "rmse_after_shift": 0.1231526043214736,
+          "nrmse_after_shift": 0.07668403970579186
+        }
+      }
+    }
+  },
+  "lumileds": {
+    "segment_npz": "/home/lachlan/ProjectsLFS/nhi_reconstruction/scan_angle_20_lumileds/angle_20_blank_20250922_170433/angle_20_blank_event_20250922_170433_segments/Scan_1_Forward_events.npz",
+    "gt_files": [
+      "/home/lachlan/ProjectsLFS/nhi_reconstruction/reference_spectrum_lumileds/USB2F042671_16-04-56-391.txt",
+      "/home/lachlan/ProjectsLFS/nhi_reconstruction/reference_spectrum_lumileds/USB2F042671_16-04-36-993.txt"
+    ],
+    "slope_nm_per_ms": 0.6147570281124497,
+    "intercept_nm": 193.26444176706832,
+    "neg_scale": 1.2601707100868225,
+    "metrics": {
+      "cumulative": {
+        "pearson_r": 0.9160178563744075,
+        "spearman_r": 0.9424274931441633,
+        "rmse": 0.1398741047572488,
+        "nrmse": 0.13963732993118008,
+        "mae": 0.07434556321269412,
+        "r2": 0.8331203654349697
+      },
+      "log": {
+        "pearson_r": 0.9691499295166266,
+        "spearman_r": 0.9565794402158873,
+        "rmse": 0.7033970132865143,
+        "nrmse": 0.1018277417676597,
+        "mae": 0.45818025880595453,
+        "r2": 0.9294995166516107
+      },
+      "derivative_vs_events": {
+        "pearson_r": 0.6273988941124862,
+        "spearman_r": 0.5483757196930744,
+        "rmse": 0.20399084847508978,
+        "nrmse": 0.11428213174229239,
+        "mae": 0.13999785041955398,
+        "r2": -0.4874652176338856
+      },
+      "shift_invariant": {
+        "cumulative": {
+          "best_shift_nm": -13.0,
+          "max_corr": 0.9423783479050846,
+          "rmse_after_shift": 0.11643528342329944,
+          "nrmse_after_shift": 0.11623818515390455
+        },
+        "log": {
+          "best_shift_nm": 1.0,
+          "max_corr": 0.9691643908774966,
+          "rmse_after_shift": 0.703248315563987,
+          "nrmse_after_shift": 0.10180621544183668
+        },
+        "derivative_vs_events": {
+          "best_shift_nm": -11.0,
+          "max_corr": 0.7171133191799304,
+          "rmse_after_shift": 0.1837257407758392,
+          "nrmse_after_shift": 0.10292897680828411
+        }
+      }
+    }
+  }
+}
