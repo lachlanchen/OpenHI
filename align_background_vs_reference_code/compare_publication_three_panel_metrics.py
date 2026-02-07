@@ -258,7 +258,9 @@ def run_dataset(
         "derivative_vs_events": compute_metrics(wl_gt, dlog_gt_norm, wl_bins, events_norm),
     }
 
-    out_dir = ensure_output_dir(args.output_root)
+    out_dir = args.output_root if args.output_root is not None else ensure_output_dir(REPO_ROOT / "align_background_vs_reference_code")
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
     fig, axes = plt.subplots(1, 3, figsize=(12.0, 3.6), sharex=True)
     ax1, ax2, ax3 = axes
     for ax in axes:
@@ -343,6 +345,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--plateau_frac", type=float, default=0.05)
     parser.add_argument("--xlim", type=float, nargs=2, default=(300.0, 900.0))
     parser.add_argument("--output_root", type=Path, default=REPO_ROOT / "align_background_vs_reference_code")
+    parser.add_argument("--out_dir", type=Path, default=None, help="Optional output directory (single folder)")
     return parser.parse_args()
 
 
@@ -369,14 +372,34 @@ def main() -> None:
         },
     }
 
+    if args.out_dir is not None:
+        args.output_root = args.out_dir
+
     if args.segment and args.gt_files:
         run_dataset(args.segment, args.gt_files, args.suffix, args)
         return
 
     if args.preset == "both":
+        out_dir = args.output_root if args.output_root is not None else ensure_output_dir(REPO_ROOT / "align_background_vs_reference_code")
+        out_dir = Path(out_dir)
+        out_dir.mkdir(parents=True, exist_ok=True)
+        combined = {}
         for key in ("2835", "lumileds"):
             cfg = presets[key]
-            run_dataset(cfg["segment"], cfg["gt_files"], cfg["suffix"], args)
+            fig_path, json_path = run_dataset(cfg["segment"], cfg["gt_files"], cfg["suffix"], args)
+            # move into combined folder if needed
+            if fig_path.parent != out_dir:
+                fig_dest = out_dir / fig_path.name
+                json_dest = out_dir / json_path.name
+                fig_dest.write_bytes(fig_path.read_bytes())
+                json_dest.write_text(json_path.read_text(encoding="utf-8"), encoding="utf-8")
+                fig_path = fig_dest
+                json_path = json_dest
+            combined[key] = json.loads(json_path.read_text(encoding="utf-8"))
+
+        combined_path = out_dir / "three_panel_metrics_combined.json"
+        combined_path.write_text(json.dumps(combined, indent=2), encoding="utf-8")
+        print(f"Saved combined JSON: {combined_path}")
     else:
         cfg = presets[args.preset]
         run_dataset(cfg["segment"], cfg["gt_files"], cfg["suffix"], args)
