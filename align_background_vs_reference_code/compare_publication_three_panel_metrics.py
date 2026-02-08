@@ -369,6 +369,8 @@ def run_dataset(
     out_name = f"three_panel_{args.bin_ms:.0f}ms_{seg_name}{suffix_tag}_metrics.png"
     fig_path = out_dir / out_name
     fig.savefig(fig_path, dpi=300)
+    pdf_path = fig_path.with_suffix(".pdf")
+    fig.savefig(pdf_path)
 
     data = {
         "segment_npz": str(segment),
@@ -391,6 +393,7 @@ def run_dataset(
     json_path.write_text(json.dumps(data, indent=2), encoding="utf-8")
 
     print(f"Saved figure: {fig_path}")
+    print(f"Saved PDF: {pdf_path}")
     print(f"Saved JSON: {json_path}")
     return fig_path, json_path
 

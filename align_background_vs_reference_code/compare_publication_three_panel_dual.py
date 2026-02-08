@@ -372,6 +372,8 @@ def main() -> None:
     out_name = f"three_panel_dual_{args.bin_ms:.0f}ms_{blank_name}_{sample_name}{suffix}.png"
     fig_path = out_dir / out_name
     fig.savefig(fig_path, dpi=300)
+    pdf_path = fig_path.with_suffix(".pdf")
+    fig.savefig(pdf_path)
 
     mapping = {
         "segment_blank": str(args.segment_blank),
@@ -397,6 +399,7 @@ def main() -> None:
     plt.close(fig)
 
     print(f"Saved dual three-panel overlay to: {fig_path}")
+    print(f"Saved dual three-panel PDF to: {pdf_path}")
     print(f"Saved mapping JSON to: {mapping_path}")
 
 

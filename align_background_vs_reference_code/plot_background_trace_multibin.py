@@ -197,6 +197,8 @@ def main() -> None:
     fig_path = out_dir / out_name
     fig.tight_layout()
     fig.savefig(fig_path, dpi=300)
+    pdf_path = fig_path.with_suffix(".pdf")
+    fig.savefig(pdf_path)
 
     if args.show:
         try:
@@ -206,6 +208,7 @@ def main() -> None:
     plt.close(fig)
 
     print(f"Saved plot: {fig_path}")
+    print(f"Saved PDF: {pdf_path}")
 
 
 if __name__ == "__main__":
