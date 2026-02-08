@@ -606,7 +606,7 @@ def main() -> None:
         line.set_ydata(spectrum_local)
         ax_spec.relim()
         ax_spec.autoscale_view(scalex=False, scaley=True)
-        ax_spec.set_title(f"Spectrum at (x={x}, y={y})")
+        ax_spec.set_title(f"Spectrum at (x={x - display_x0}, y={y - display_y0})")
         point.set_data([x - display_x0], [y - display_y0])
         fig.canvas.draw_idle()
 
