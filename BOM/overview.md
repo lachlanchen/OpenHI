@@ -1,3 +1,11 @@
+# Table S2. Acquisition Time and Cost Comparison
+
+| Parameter | Ours | Reference camera |
+|---|---|---|
+| Acquisition time | ∼585 ms per scan | 300 s per scan |
+| Data volume | 18.5 MB | 138 MB |
+| Approx. price | ∼3000 USD | 14 000 USD |
+
 # Table S3. Bill of Materials for the Core Scanning Illumination Module
 (Excluding event camera and optional 4f validation optics)
 
