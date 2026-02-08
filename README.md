@@ -35,6 +35,10 @@ When illumination sweeps across wavelengths over time, the event stream encodes 
 * GPU optional but recommended for faster processing
 * RAW recordings and/or segmented NPZ files
 
+## Bill of Materials (Core Module)
+
+See `BOM/core_module.md` for the full table with links and notes.
+
 ### Basic Workflow
 
 ```bash
