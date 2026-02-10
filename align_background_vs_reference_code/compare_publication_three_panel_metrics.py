@@ -344,7 +344,6 @@ def run_dataset(
     ax1.set_xlabel("Wavelength (nm)")
     ax1.set_ylabel("Normalised intensity")
     ax1.grid(alpha=0.3)
-    ax1.legend(loc="upper right")
 
     ax2.axvspan(380, 780, color="0.92", zorder=0)
     ax2.plot(wl_gt, log_gt, color="#1f77b4", label="GT")
@@ -361,6 +360,8 @@ def run_dataset(
     ax3.set_xlabel("Wavelength (nm)")
     ax3.set_ylabel("d log(SPD)/dλ, Event Density")
     ax3.grid(alpha=0.3)
+    handles, labels = ax1.get_legend_handles_labels()
+    ax3.legend(handles, labels, loc="upper right", bbox_to_anchor=(1.0, 1.0))
 
     fig.tight_layout(rect=(0.0, 0.0, 1.0, 0.94))
 
