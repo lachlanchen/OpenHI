@@ -418,7 +418,7 @@ If this repository is useful in your research, please cite the Optica Open prepr
   year    = {2025},
   journal = {Optica Open},
   note    = {Preprint},
-  doi     = {10.1364/opticaopen.30739151.v2}
+  doi     = {10.1364/opticaopen.30739151}
 }
 ```
 
