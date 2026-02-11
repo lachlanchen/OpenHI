@@ -1,4 +1,12 @@
 # Self-Calibrated Neuromorphic Hyperspectral Imaging
+
+<p align="center">
+  <img src="images/device_setup.png" alt="Device setup" width="24%">
+  <img src="images/data_acquisition_gui.png" alt="Acquisition GUI" width="74%">
+</p>
+
+*Left: modular transmission microscope with a motorised grating illumination arm and vertical detection stack. Right: data-acquisition GUI used to monitor segmentation, compensation, and reconstructions in real time.*
+
 A comprehensive pipeline for reconstructing spectra from event cameras with dispersed light illumination (e.g., diffraction grating). The system records intensity change events $e = (x, y, t, p)$ where $p \in \{-1, +1\}$ indicates polarity of log-intensity change, and automatically infers scan timing and calibration metadata (“auto info”) directly from the event stream.
 
 Key hardware assets are kept alongside the code for quick access:
@@ -18,13 +26,6 @@ When illumination sweeps across wavelengths over time, the event stream encodes 
 1. **Segment**: Find scan timing and split recordings into forward/backward passes
 2. **Compensate**: Estimate piecewise-linear time-warp to remove scan-induced temporal tilt
 3. **Visualize**: Overlay learned boundaries and compare original vs. compensated time-binned frames
-
-<p align="center">
-  <img src="images/device_setup.png" alt="Device setup" width="24%">
-  <img src="images/data_acquisition_gui.png" alt="Acquisition GUI" width="74%">
-</p>
-
-*Left: modular transmission microscope with a motorised grating illumination arm and vertical detection stack. Right: data-acquisition GUI used to monitor segmentation, compensation, and reconstructions in real time.*
 
 ## Quick Start
 
