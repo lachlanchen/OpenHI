@@ -413,12 +413,12 @@ If this repository is useful in your research, please cite the Optica Open prepr
 
 ```bibtex
 @article{chen2025selfcalibrated,
-  title   = {Self-calibrated neuromorphic hyperspectral imaging},
+  title   = {Self-calibrated neuromorphic hyperspectral derivative imaging},
   author  = {Chen, Rongzhou and Wang, Chutian and Li, Yuxing and Cao, Yuqing and Zhu, Shuo and Lam, Edmund},
   year    = {2025},
   journal = {Optica Open},
   note    = {Preprint},
-  doi     = {10.1364/opticaopen.30739151}
+  doi     = {10.1364/opticaopen.30739151.v2}
 }
 ```
 
