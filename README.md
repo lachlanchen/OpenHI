@@ -16,10 +16,10 @@ Purchase the core development kit (excluding camera, tube lens, and optical tabl
 ## Repository Map
 
 Key hardware assets are kept alongside the code for quick access:
-- 3D-printed parts: `3D/`
-- PCB layouts: `PCB/`
-- Microcontroller firmware: `firmware/`
-- Acquisition UI (desktop): `ImagingGui/`
+- 3D-printed parts: [`3D/`](3D/)
+- PCB layouts: [`PCB/`](PCB/)
+- Microcontroller firmware: [`firmware/`](firmware/)
+- Acquisition UI (desktop): [`ImagingGui/`](ImagingGui/)
 
 ## Contents
 
