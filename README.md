@@ -8,7 +8,7 @@ Key hardware assets are kept alongside the code for quick access:
 - Acquisition UI (desktop): `ImagingGui/`
 
 Purchase the core development kit (excluding camera, tube lens, and optical table) for the paper
-[Self-calibrated neuromorphic hyperspectral imaging](https://doi.org/10.1364/opticaopen.30739151.v1):
+[Self-calibrated neuromorphic hyperspectral imaging](https://doi.org/10.1364/opticaopen.30739151):
 - https://lazying.art/openhi-kit.html
 - Promotion code for 30% off: `OPTICA`
 
@@ -419,7 +419,7 @@ If this repository is useful in your research, please cite the Optica Open prepr
   year    = {2025},
   journal = {Optica Open},
   note    = {Preprint},
-  doi     = {10.1364/opticaopen.30739151.v1}
+  doi     = {10.1364/opticaopen.30739151}
 }
 ```
 
