@@ -9,15 +9,35 @@
 
 A comprehensive pipeline for reconstructing spectra from event cameras with dispersed light illumination (e.g., diffraction grating). The system records intensity change events $e = (x, y, t, p)$ where $p \in \{-1, +1\}$ indicates polarity of log-intensity change, and automatically infers scan timing and calibration metadata (“auto info”) directly from the event stream.
 
+Purchase the core development kit (excluding camera, tube lens, and optical table) for the paper [Self-calibrated neuromorphic hyperspectral imaging](https://doi.org/10.1364/opticaopen.30739151) preprinted on Optica Open:
+- https://lazying.art/openhi-kit.html
+- Promotion code for 30% off: `OPTICA`
+
+## Repository Map
+
 Key hardware assets are kept alongside the code for quick access:
 - 3D-printed parts: `3D/`
 - PCB layouts: `PCB/`
 - Microcontroller firmware: `firmware/`
 - Acquisition UI (desktop): `ImagingGui/`
 
-Purchase the core development kit (excluding camera, tube lens, and optical table) for the paper [Self-calibrated neuromorphic hyperspectral imaging](https://doi.org/10.1364/opticaopen.30739151) preprinted on Optica Open:
-- https://lazying.art/openhi-kit.html
-- Promotion code for 30% off: `OPTICA`
+## Contents
+
+- Overview
+- Quick Start
+- Bill of Materials (Core Module)
+- Core Scripts
+- Additional Tools
+- Turbo Multi‑Scan Compensation
+- Parameter Management
+- Memory Optimization
+- Output Structure
+- Configuration Examples
+- Wavelength Mapping
+- Tips and Best Practices
+- Citation
+- License
+- Contributing
 
 ## Overview
 
@@ -34,6 +54,32 @@ When illumination sweeps across wavelengths over time, the event stream encodes 
 * Python 3.9+ with `numpy`, `torch`, `matplotlib`
 * GPU optional but recommended for faster processing
 * RAW recordings and/or segmented NPZ files
+
+### Basic Workflow
+
+```bash
+# 1. Segment RAW into 6 scans (Forward/Backward)
+python segment_robust_fixed.py \
+  data/recording.raw \
+  --segment_events \
+  --output_dir data/segments/
+
+# 2. Train multi-window compensation
+python compensate_multiwindow_train_saved_params.py \
+  data/segments/Scan_1_Forward_events.npz \
+  --bin_width 50000 \
+  --visualize --plot_params --a_trainable \
+  --iterations 1000
+
+# 3. Visualize results with boundaries
+python visualize_boundaries_and_frames.py \
+  data/segments/Scan_1_Forward_events.npz
+
+# 4. Compare cumulative vs multi-bin means
+python visualize_cumulative_compare.py \
+  data/segments/Scan_1_Forward_events.npz \
+  --sensor_width 1280 --sensor_height 720
+```
 
 ## Bill of Materials (Core Module)
 
@@ -61,32 +107,6 @@ See `BOM/core_module.md` for the full table with links and notes.
 | 3D printing | One-third PLA filament spool (covers all printed parts) | 5.09 | https://e.tb.cn/h.7FhOVWX7SLHvNNf?tk=kOcQUPRJsbo |
 | Lens | Plano-convex lens (25.4 mm, 350–700 nm AR) |  | https://e.tb.cn/h.7FSePNYhqt7ITbh?tk=tH8ZUP8i3cC |
 | Total | core module | **33.99** |  |
-
-### Basic Workflow
-
-```bash
-# 1. Segment RAW into 6 scans (Forward/Backward)
-python segment_robust_fixed.py \
-  data/recording.raw \
-  --segment_events \
-  --output_dir data/segments/
-
-# 2. Train multi-window compensation
-python compensate_multiwindow_train_saved_params.py \
-  data/segments/Scan_1_Forward_events.npz \
-  --bin_width 50000 \
-  --visualize --plot_params --a_trainable \
-  --iterations 1000
-
-# 3. Visualize results with boundaries
-python visualize_boundaries_and_frames.py \
-  data/segments/Scan_1_Forward_events.npz
-
-# 4. Compare cumulative vs multi-bin means
-python visualize_cumulative_compare.py \
-  data/segments/Scan_1_Forward_events.npz \
-  --sensor_width 1280 --sensor_height 720
-```
 
 ## Core Scripts
 
@@ -222,6 +242,24 @@ python scan_compensation_gui_cloud.py
 
 Synchronized recording system for event and frame cameras.
 
+**Features**:
+
+* Simultaneous event and frame recording
+* Real-time preview with transformations
+* Always-on-top window controls
+* Parameter adjustment during recording
+
+### Arduino Motor Control: `rotor/step42_with_key_int/step42_with_key_int.ino`
+
+Stepper motor control for scanning mechanisms.
+
+**Features**:
+
+* Precise angle control with microstepping
+* Acceleration/deceleration profiles
+* Limit switch integration
+* Auto-centering functionality
+
 ## Turbo Multi‑Scan Compensation
 
 When you have multiple one‑way scans (Forward/Backward) of the same sweep, you can merge them and run the proven trainer on a single combined event stream using `compensate_multiwindow_turbo.py`.
@@ -272,24 +310,6 @@ Options
 Speed scaling tip
 
 If your scan is N× faster than baseline, reduce `--bin-width` by the same factor (e.g., baseline 50 ms → 10× faster → 5 ms: `--bin-width 5000`). You can train once (e.g., 5 ms), then use `--load-params` to quickly regenerate results at 10 ms without retraining.
-
-**Features**:
-
-* Simultaneous event and frame recording
-* Real-time preview with transformations
-* Always-on-top window controls
-* Parameter adjustment during recording
-
-### Arduino Motor Control: `rotor/step42_with_key_int/step42_with_key_int.ino`
-
-Stepper motor control for scanning mechanisms.
-
-**Features**:
-
-* Precise angle control with microstepping
-* Acceleration/deceleration profiles
-* Limit switch integration
-* Auto-centering functionality
 
 ## Parameter Management
 
