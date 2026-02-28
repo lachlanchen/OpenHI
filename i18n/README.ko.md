@@ -1,4 +1,5 @@
-[English](README.md) · [العربية](i18n/README.ar.md) · [Español](i18n/README.es.md) · [Français](i18n/README.fr.md) · [日本語](i18n/README.ja.md) · [한국어](i18n/README.ko.md) · [Tiếng Việt](i18n/README.vi.md) · [中文 (简体)](i18n/README.zh-Hans.md) · [中文（繁體）](i18n/README.zh-Hant.md) · [Deutsch](i18n/README.de.md) · [Русский](i18n/README.ru.md)
+[English](../README.md) · [العربية](README.ar.md) · [Español](README.es.md) · [Français](README.fr.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Tiếng Việt](README.vi.md) · [中文 (简体)](README.zh-Hans.md) · [中文（繁體）](README.zh-Hant.md) · [Deutsch](README.de.md) · [Русский](README.ru.md)
+
 
 # Self-Calibrated Neuromorphic Hyperspectral Imaging (OpenHI)
 
@@ -12,18 +13,17 @@
 [![i18n](https://img.shields.io/badge/i18n-5%20ready%20%7C%206%20planned-22c55e.svg)](#internationalization)
 [![Pipeline](https://img.shields.io/badge/Pipeline-Segment%20%E2%86%92%20Compensate%20%E2%86%92%20Visualize-0ea5e9.svg)](#overview)
 
-
 > [!NOTE]
-> i18n status in this checkout: `ar`, `es`, `fr`, `ja`, `ko` are present under `i18n/`. Additional language links are kept for compatibility with planned translation coverage.
+> 이 체크아웃의 i18n 상태: `ar`, `es`, `fr`, `ja`, `ko`가 `i18n/`에 포함되어 있습니다. 추가 언어 링크는 향후 번역 확장을 위한 호환성 유지를 위해 남겨 두었습니다.
 
-A comprehensive pipeline for reconstructing spectra from event cameras with dispersed light illumination (e.g., diffraction grating). The system records intensity change events $e = (x, y, t, p)$ where $p \in \{-1, +1\}$ indicates polarity of log-intensity change, and automatically infers scan timing and calibration metadata ("auto info") directly from the event stream.
+회절격자 같은 분산 조명을 사용하는 이벤트 카메라에서 스펙트럼을 재구성하기 위한 종합 파이프라인입니다. 시스템은 강도 변화 이벤트 $e = (x, y, t, p)$를 기록하며, 여기서 $p \in \{-1, +1\}$는 로그 강도 변화의 극성을 의미합니다. 또한 이벤트 스트림에서 스캔 타이밍 및 보정 메타데이터("auto info")를 자동 추론합니다.
 
 ## At a Glance
 
 | Item | Details |
 |---|---|
-| Core idea | Self-calibrated hyperspectral derivative imaging from event streams |
-| Main stages | `segment_robust_fixed.py` -> `compensate_multiwindow_train_saved_params.py` -> visualization scripts |
+| Core idea | 이벤트 스트림 기반 자기 보정 하이퍼스펙트럼 미분 이미징 |
+| Main stages | `segment_robust_fixed.py` -> `compensate_multiwindow_train_saved_params.py` -> 시각화 스크립트 |
 | Hardware docs in repo | `3D/`, `PCB/`, `firmware/`, `BOM/` |
 | Desktop tools | `scan_compensation_gui_cloud.py`, `ImagingGUI/DualCamera_separate_transform.py` |
 | Canonical paper | [Optica Open preprint (DOI: 10.1364/opticaopen.30739151)](https://doi.org/10.1364/opticaopen.30739151) |
@@ -34,12 +34,12 @@ A comprehensive pipeline for reconstructing spectra from event cameras with disp
   <img src="images/data_acquisition_gui.png" alt="Acquisition GUI" width="74%">
 </p>
 
-*Left: modular transmission microscope with a motorised grating illumination arm and vertical detection stack. Right: data-acquisition GUI used to monitor segmentation, compensation, and reconstructions in real time.*
+*왼쪽: 모터 구동 격자 조명 암과 수직 검출 스택을 갖춘 모듈형 투과 현미경. 오른쪽: 세그멘테이션, 보상, 재구성을 실시간으로 모니터링하는 데이터 수집 GUI.*
 
 > [!TIP]
-> Purchase the core development kit (excluding camera, tube lens, and optical table) for the paper [Self-calibrated neuromorphic hyperspectral imaging](https://doi.org/10.1364/opticaopen.30739151) preprinted on Optica Open:
+> Optica Open에 프리프린트로 공개된 논문 [Self-calibrated neuromorphic hyperspectral imaging](https://doi.org/10.1364/opticaopen.30739151)의 핵심 개발 키트(카메라, 튜브 렌즈, 광학 테이블 제외) 구매 링크:
 > - https://lazying.art/openhi-kit.html
-> - Promotion code for 30% off: `OPTICA`
+> - 30% 할인 프로모션 코드: `OPTICA`
 
 ## Contents
 
@@ -76,7 +76,7 @@ A comprehensive pipeline for reconstructing spectra from event cameras with disp
 
 ## Overview
 
-When illumination sweeps across wavelengths over time, the event stream encodes a temporal derivative of the underlying spectrum along the dispersion axis.
+조명이 시간에 따라 파장 방향으로 스윕되면, 이벤트 스트림은 분산 축을 따라 기저 스펙트럼의 시간 미분 정보를 담게 됩니다.
 
 ```text
 RAW event recording
@@ -85,37 +85,37 @@ RAW event recording
    -> frame/cumulative/wavelength diagnostics
 ```
 
-This pipeline provides three main stages:
+이 파이프라인은 다음 3단계로 구성됩니다.
 
 | Stage | Purpose | Primary script(s) |
 |---|---|---|
-| 1. Segment | Find scan timing and split recordings into forward/backward passes | `segment_robust_fixed.py` |
-| 2. Compensate | Estimate piecewise-linear time-warp to remove scan-induced temporal tilt | `compensate_multiwindow_train_saved_params.py` |
-| 3. Visualize | Overlay learned boundaries and compare original vs. compensated time-binned frames | `visualize_boundaries_and_frames.py`, `visualize_cumulative_compare.py` |
+| 1. Segment | 스캔 타이밍을 찾고 기록을 정방향/역방향 패스로 분리 | `segment_robust_fixed.py` |
+| 2. Compensate | 스캔으로 인한 시간 기울기를 제거하기 위한 구간별 선형 time-warp 추정 | `compensate_multiwindow_train_saved_params.py` |
+| 3. Visualize | 학습된 경계를 오버레이하고 보상 전/후 시간 빈 프레임 비교 | `visualize_boundaries_and_frames.py`, `visualize_cumulative_compare.py` |
 
-The repository also includes hardware assets, acquisition GUI code, and archival experiment branches under `versions/`.
+또한 저장소에는 하드웨어 에셋, 데이터 수집 GUI 코드, `versions/` 아래 실험 아카이브 브랜치가 포함됩니다.
 
 ## Features
 
-- End-to-end RAW-to-spectrum event processing workflow.
-- Auto/manual scan period detection and forward/backward segmentation.
-- Multi-window compensation with trainable/fixed parameter modes.
-- Parameter save/load in `NPZ`, `JSON`, and `CSV`.
-- Multi-scan merge workflow for faster training iterations (`compensate_multiwindow_turbo.py`).
-- Visualization suite for boundaries, binned frames, cumulative curves, and weighted diagnostics.
-- Hardware documentation: BOM, PCB, 3D parts, firmware notes.
-- Acquisition utilities for synchronized event/frame camera setups.
+- RAW에서 스펙트럼까지 이어지는 엔드투엔드 이벤트 처리 워크플로.
+- 자동/수동 스캔 주기 검출 및 정/역방향 세그멘테이션.
+- 학습 가능/고정 파라미터 모드를 지원하는 멀티 윈도 보상.
+- `NPZ`, `JSON`, `CSV` 형식의 파라미터 저장/불러오기.
+- 빠른 학습 반복을 위한 멀티 스캔 병합 워크플로(`compensate_multiwindow_turbo.py`).
+- 경계, 시간 빈 프레임, 누적 곡선, 가중 진단 시각화 스위트.
+- 하드웨어 문서: BOM, PCB, 3D 부품, 펌웨어 노트.
+- 이벤트/프레임 카메라 동기화 구성을 위한 데이터 취득 유틸리티.
 
 | Category | Included capabilities |
 |---|---|
-| Signal processing | Segmentation, period detection, time-warp compensation |
-| Optimization | Trainable/fixed parameters, smoothness controls, chunked training |
-| Outputs | Visual overlays, cumulative comparisons, wavelength-mapped diagnostics |
-| Platform assets | Hardware design files, firmware notes, GUI tooling, historical archives |
+| Signal processing | 세그멘테이션, 주기 검출, time-warp 보상 |
+| Optimization | 학습 가능/고정 파라미터, 스무딩 제어, 청크 학습 |
+| Outputs | 시각 오버레이, 누적 비교, 파장 매핑 진단 |
+| Platform assets | 하드웨어 설계 파일, 펌웨어 노트, GUI 툴링, 히스토리 아카이브 |
 
 ## Repository Map
 
-Key hardware assets are kept alongside the code for quick access:
+핵심 하드웨어 에셋은 빠르게 접근할 수 있도록 코드와 함께 같은 저장소에 배치되어 있습니다.
 
 | Area | Path |
 |---|---|
@@ -165,35 +165,35 @@ OpenHI/
 
 ## Quick Start (5-Min Path)
 
-If your environment is already prepared and your dataset folder contains a `*event*.raw` file:
+환경이 이미 준비되어 있고 데이터셋 폴더에 `*event*.raw` 파일이 있다면:
 
 ```bash
 scripts/run_scan_pipeline.sh /path/to/dataset_dir
 ```
 
-To force a specific RAW file:
+특정 RAW 파일을 강제로 지정하려면:
 
 ```bash
 scripts/run_scan_pipeline.sh /path/to/dataset_dir /path/to/recording_event.raw
 ```
 
-This wrapper runs segmentation, compensation training, and visualization using repository-default script paths and CLI flags.
+이 래퍼는 저장소 기본 스크립트 경로 및 CLI 플래그를 사용해 세그멘테이션, 보상 학습, 시각화를 실행합니다.
 
 > [!TIP]
-> For first validation, run the wrapper on one dataset directory, then inspect the generated segment NPZ and visualization outputs before tuning `PIPELINE_*` variables.
+> 초기 검증에서는 먼저 데이터셋 디렉터리 하나에 대해 래퍼를 실행하고, 생성된 segment NPZ 및 시각화 결과를 확인한 뒤 `PIPELINE_*` 변수를 조정하세요.
 
 ## Prerequisites
 
-- Python 3.9+ (Python 3.10+ for some GUI tooling under `ImagingGUI/`).
-- Core Python packages: `numpy`, `torch`, `matplotlib`.
-- Optional but common: `opencv-python`, `pillow`, `cellpose`.
-- Metavision SDK / Python bindings for RAW event reading workflows (`simple_raw_reader.py`, segmentation from RAW).
-- CUDA-enabled PyTorch is recommended for faster optimization.
-- RAW recordings and/or segmented NPZ files available locally.
+- Python 3.9+ (`ImagingGUI/` 일부 GUI 도구는 Python 3.10+).
+- 핵심 Python 패키지: `numpy`, `torch`, `matplotlib`.
+- 선택 사항이지만 자주 사용: `opencv-python`, `pillow`, `cellpose`.
+- RAW 이벤트 읽기 워크플로(`simple_raw_reader.py`, RAW 기반 세그멘테이션)를 위한 Metavision SDK / Python 바인딩.
+- 더 빠른 최적화를 위해 CUDA 지원 PyTorch 권장.
+- RAW 기록 파일 및/또는 세그멘트 NPZ 파일이 로컬에 준비되어 있어야 함.
 
 ## Installation
 
-No locked environment file is currently provided at repository root. Suggested setup:
+현재 저장소 루트에는 고정된 환경 파일이 없습니다. 권장 설정:
 
 ```bash
 # create and activate a virtual environment or conda env
@@ -208,7 +208,7 @@ pip install opencv-python pillow
 # pip install cellpose
 ```
 
-If using Git hooks for large-file hygiene:
+대용량 파일 위생 관리를 위해 Git hooks를 사용한다면:
 
 ```bash
 bash scripts/setup_hooks.sh
@@ -248,23 +248,23 @@ python visualize_cumulative_compare.py \
 scripts/run_scan_pipeline.sh /path/to/dataset_dir [raw_file]
 ```
 
-Environment knobs supported by `scripts/run_scan_pipeline.sh`:
+`scripts/run_scan_pipeline.sh`에서 지원하는 환경 변수:
 
 | Variable | Default | Purpose |
 |---|---:|---|
-| `PIPELINE_ACTIVITY_FRACTION` | `0.90` | Active event window fraction |
-| `PIPELINE_BIN_WIDTH` | `50000` | Training bin width in microseconds |
-| `PIPELINE_SENSOR_WIDTH` | `1280` | Sensor width for visualization |
-| `PIPELINE_SENSOR_HEIGHT` | `720` | Sensor height for visualization |
-| `PIPELINE_SAMPLE_RATE` | `0.10` | Event sampling fraction for plotting |
-| `PIPELINE_TIME_BIN_US` | `1000` | Segmentation activity-bin size |
-| `PIPELINE_SEGMENT_PATTERN` | `Scan_1_Forward_events.npz` | Segment file pattern for downstream scripts |
+| `PIPELINE_ACTIVITY_FRACTION` | `0.90` | 활성 이벤트 윈도 비율 |
+| `PIPELINE_BIN_WIDTH` | `50000` | 학습 빈 폭 (마이크로초) |
+| `PIPELINE_SENSOR_WIDTH` | `1280` | 시각화용 센서 너비 |
+| `PIPELINE_SENSOR_HEIGHT` | `720` | 시각화용 센서 높이 |
+| `PIPELINE_SAMPLE_RATE` | `0.10` | 플로팅용 이벤트 샘플링 비율 |
+| `PIPELINE_TIME_BIN_US` | `1000` | 세그멘테이션 활동 빈 크기 |
+| `PIPELINE_SEGMENT_PATTERN` | `Scan_1_Forward_events.npz` | 후속 스크립트용 세그먼트 파일 패턴 |
 
 ## Internationalization
 
-The repository uses a single language-options line at the top of each README to avoid duplicated language bars.
+저장소는 언어 바 중복을 피하기 위해 각 README 상단에 단일 language-options 줄을 사용합니다.
 
-Currently available translated files in `i18n/`:
+현재 `i18n/`에 제공되는 번역 파일:
 
 - `README.ar.md`
 - `README.es.md`
@@ -275,34 +275,34 @@ Currently available translated files in `i18n/`:
 | Language link in nav | File in `i18n/` | Status |
 |---|---|---|
 
-Planned language links are intentionally preserved in the top navigation for forward compatibility.
+상단 내비게이션의 계획 언어 링크는 향후 호환성을 위해 의도적으로 유지합니다.
 
 ## Configuration
 
-Important CLI controls used across scripts:
+스크립트 전반에서 자주 사용하는 주요 CLI 제어 옵션:
 
 ### Segmentation (`segment_robust_fixed.py`)
 
-- `--time_bin_us`: activity bin size in microseconds.
-- `--round_trip_period`: manual period (default `1688` bins).
-- `--auto_calculate_period`: period via autocorrelation.
-- `--activity_fraction`: active event window fraction.
-- `--manual_start_shift_ms`: manual scan start offset.
+- `--time_bin_us`: 활동 빈 크기(마이크로초).
+- `--round_trip_period`: 수동 주기(기본값 `1688` bins).
+- `--auto_calculate_period`: 자기상관 기반 주기 계산.
+- `--activity_fraction`: 활성 이벤트 윈도 비율.
+- `--manual_start_shift_ms`: 수동 스캔 시작 오프셋.
 
 ### Compensation (`compensate_multiwindow_train_saved_params.py`)
 
-- `--num_params` (default `13`), `--temperature` (default `5000`).
+- `--num_params` (기본 `13`), `--temperature` (기본 `5000`).
 - `--a_trainable` / `--a_fixed`, `--b_trainable` / `--b_fixed`, `--boundary_trainable`.
 - `--a_default`, `--b_default`.
 - `--iterations`, `--learning_rate`, `--smoothness_weight`.
-- `--chunk_size` for memory control.
-- `--load_params` to reuse learned parameters.
+- 메모리 제어용 `--chunk_size`.
+- 학습 파라미터 재사용용 `--load_params`.
 
 ### Visualization
 
-- `visualize_boundaries_and_frames.py`: `--sample_rate`, `--wavelength_min`, `--wavelength_max`, sensor size args.
-- `visualize_cumulative_compare.py`: sensor size, `--output_dir`, `--sample_label`.
-- `visualize_cumulative_weighted.py`: polarity scales, `--step_us`, `--auto_scale`, `--exp`, `--no_comp`.
+- `visualize_boundaries_and_frames.py`: `--sample_rate`, `--wavelength_min`, `--wavelength_max`, 센서 크기 인자.
+- `visualize_cumulative_compare.py`: 센서 크기, `--output_dir`, `--sample_label`.
+- `visualize_cumulative_weighted.py`: polarity 스케일, `--step_us`, `--auto_scale`, `--exp`, `--no_comp`.
 
 ## Examples
 
@@ -340,7 +340,7 @@ python scanning_alignment_visualization_cumulative_compare.py \
   --sample_label "led_12v_no_acc_glass Scan_1_Forward"
 ```
 
-These legacy commands are intentionally preserved for compatibility context; in this checkout, use current root scripts where possible.
+이 레거시 명령은 호환성 컨텍스트를 위해 의도적으로 보존되어 있습니다. 가능하면 현재 체크아웃의 루트 스크립트를 사용하세요.
 
 ### Turbo multi-scan training
 
@@ -361,7 +361,7 @@ python compensate_multiwindow_train_saved_params.py segment.npz \
 
 ## Bill of Materials (Core Module)
 
-See [`BOM/core_module.md`](BOM/core_module.md) for the full table with links and notes.
+전체 링크/비고 포함 표는 [`BOM/core_module.md`](BOM/core_module.md)에서 확인하세요.
 
 ### Table S2. Acquisition Time and Cost Comparison Between the Proposed Event-Driven System and a Reference Hyperspectral Camera
 
@@ -390,16 +390,16 @@ See [`BOM/core_module.md`](BOM/core_module.md) for the full table with links and
 
 ### 1. Segmentation: `segment_robust_fixed.py`
 
-**Goal**: Extract scan timing from raw events and slice into 6 one-way scans (F, B, F, B, F, B).
+**Goal**: 원시 이벤트에서 스캔 타이밍을 추출하고 6개의 단방향 스캔(F, B, F, B, F, B)으로 분할.
 
 **Mathematical Description**:
 
 - **Activity signal** (events binned with $\Delta t = 1000~\mu\text{s}$):
   $$a[n] = \left|\{ i \mid t_{\min} + n\Delta t \le t_i < t_{\min} + (n+1)\Delta t \}\right|.$$
 
-- **Active window detection**: find the smallest contiguous window containing $80\%$ of events.
+- **Active window detection**: 이벤트의 $80\%$를 포함하는 최소 연속 구간 탐색.
 
-- **Period estimation**: autocorrelation or manual period (default: $1688$ bins).
+- **Period estimation**: 자기상관 또는 수동 주기(기본값: $1688$ bins).
 
 - **Reverse-correlation** (timing structure):
   $$R[k] = \sum_{n} a[n]\, a_{\text{rev}}[n+k]$$
@@ -418,15 +418,15 @@ python segment_robust_fixed.py recording.raw --segment_events --round_trip_perio
 
 **Arguments**:
 
-- `--segment_events`: Save individual scan segments as NPZ files.
-- `--round_trip_period 1688`: Use manual period (default).
-- `--auto_calculate_period`: Override manual period with autocorrelation.
-- `--activity_fraction 0.80`: Fraction of events for active region.
-- `--max_iterations 2`: Refinement iterations.
+- `--segment_events`: 개별 스캔 세그먼트를 NPZ로 저장.
+- `--round_trip_period 1688`: 수동 주기 사용(기본값).
+- `--auto_calculate_period`: 수동 주기를 자기상관 결과로 대체.
+- `--activity_fraction 0.80`: 활성 영역 이벤트 비율.
+- `--max_iterations 2`: 정제 반복 횟수.
 
 ### 2. Compensation: `compensate_multiwindow_train_saved_params.py`
 
-**Goal**: Learn time-warp parameters to remove scan-induced temporal shear using multi-window piecewise-linear compensation.
+**Goal**: 멀티 윈도 구간 선형 보상을 사용해 스캔 유도 시간 전단을 제거하는 time-warp 파라미터 학습.
 
 **Mathematical Description**:
 
@@ -442,7 +442,7 @@ python segment_robust_fixed.py recording.raw --segment_events --round_trip_perio
 - **Time warp**:
   $$\Delta t(x,y,t) = \sum_i w_i (\tilde{a}_i x + \tilde{b}_i y),\qquad t' = t - \Delta t(x,y,t).$$
 
-- **Loss**: variance minimization of time-binned frames with smoothness regularization on parameters.
+- **Loss**: 시간 빈 프레임 분산 최소화 + 파라미터 스무딩 정규화.
 
 **Usage**:
 
@@ -459,24 +459,24 @@ python compensate_multiwindow_train_saved_params.py segment.npz \
 
 **Key Arguments**:
 
-- `--a_trainable` / `--a_fixed`: Control a-parameter training (default: fixed).
-- `--b_trainable` / `--b_fixed`: Control b-parameter training (default: trainable).
-- `--num_params 13`: Number of boundary parameters.
-- `--temperature 5000`: Sigmoid temperature for soft windows.
-- `--smoothness_weight 0.001`: Regularization weight.
-- `--load_params file.npz`: Load saved parameters.
-- `--chunk_size 250000`: Memory-efficient processing chunk size.
+- `--a_trainable` / `--a_fixed`: a 파라미터 학습 여부 제어(기본: 고정).
+- `--b_trainable` / `--b_fixed`: b 파라미터 학습 여부 제어(기본: 학습).
+- `--num_params 13`: 경계 파라미터 개수.
+- `--temperature 5000`: 소프트 윈도 시그모이드 온도.
+- `--smoothness_weight 0.001`: 정규화 가중치.
+- `--load_params file.npz`: 저장된 파라미터 불러오기.
+- `--chunk_size 250000`: 메모리 효율 처리 청크 크기.
 
 ### 3. Visualization: `visualize_boundaries_and_frames.py`
 
-**Goal**: Display learned parameters and show qualitative improvements.
+**Goal**: 학습된 파라미터를 표시하고 정성적 개선 결과를 제시.
 
 **Features**:
 
-- Parameter overlays on $x\text{–}t$ and $y\text{–}t$ projections.
-- Time-binned frame comparisons (original vs. compensated).
-- Sliding window analysis (50 ms and 2 ms bins).
-- Wavelength mapping for spectral visualization.
+- $x\text{–}t$ 및 $y\text{–}t$ 투영 위 파라미터 오버레이.
+- 시간 빈 프레임 비교(원본 vs 보상).
+- 슬라이딩 윈도 분석(50 ms 및 2 ms bins).
+- 스펙트럼 시각화를 위한 파장 매핑.
 
 **Usage**:
 
@@ -487,14 +487,14 @@ python visualize_boundaries_and_frames.py segment.npz \
 
 ### 4. Cumulative Comparison: `visualize_cumulative_compare.py`
 
-**Goal**: Compare cumulative 2 ms-step means with sliding bin means.
+**Goal**: 누적 2 ms 단계 평균과 슬라이딩 빈 평균 비교.
 
 **Mathematical Description**:
 
 - **Cumulative means**:
   $$F(T) = \frac{1}{HW}\sum_{t < T}\text{events}(t).$$
 
-- **Sliding means**: event counts in $[T-\Delta,\,T)$ divided by $H \times W$.
+- **Sliding means**: $[T-\Delta,\,T)$ 구간 이벤트 수를 $H \times W$로 나눈 값.
 
 - **Relationship** (finite-difference derivative):
   $$\Delta F(T) \approx \frac{F(T) - F(T-\Delta)}{\Delta}.$$
@@ -511,14 +511,14 @@ python visualize_cumulative_compare.py segment.npz \
 
 ### GUI Application: `scan_compensation_gui_cloud.py`
 
-Complete GUI for scan compensation with 3D spectral visualization.
+3D 스펙트럼 시각화를 포함한 스캔 보상 통합 GUI.
 
 **Features**:
 
-- Interactive parameter tuning.
-- Real-time optimization progress.
-- 3D wavelength-mapped visualization.
-- Export results and parameters.
+- 인터랙티브 파라미터 튜닝.
+- 실시간 최적화 진행 표시.
+- 3D 파장 매핑 시각화.
+- 결과 및 파라미터 내보내기.
 
 **Usage**:
 
@@ -528,47 +528,47 @@ python scan_compensation_gui_cloud.py
 
 ### Dual Camera System (current path)
 
-Synchronized recording system for event and frame cameras:
+이벤트 카메라와 프레임 카메라를 동기 기록하는 시스템:
 
 - `ImagingGUI/DualCamera_separate_transform.py`
 
 **Features**:
 
-- Simultaneous event and frame recording.
-- Real-time preview with transformations.
-- Always-on-top window controls.
-- Parameter adjustment during recording.
+- 이벤트/프레임 동시 기록.
+- 변환 포함 실시간 프리뷰.
+- 항상 위 창 제어.
+- 기록 중 파라미터 조정.
 
 ### Arduino Motor Control (legacy path reference retained)
 
-The original README referenced this firmware sketch path:
+기존 README에서 참조한 펌웨어 스케치 경로:
 
 - `rotor/step42_with_key_int/step42_with_key_int.ino`
 
-Current repository layout includes firmware notes at:
+현재 저장소 레이아웃의 펌웨어 노트 위치:
 
 - `firmware/README.md`
 
-This path mismatch is preserved here intentionally; if you have the rotor sketch folders in another branch/local checkout, keep using those paths.
+이 경로 불일치는 의도적으로 보존했습니다. 다른 브랜치/로컬 체크아웃에 rotor 스케치 폴더가 있다면 기존 경로를 그대로 사용하세요.
 
-Legacy documented capabilities of this sketch include:
+이 스케치의 레거시 문서상 기능:
 
-- Precise angle control with microstepping.
-- Acceleration/deceleration profiles.
-- Limit switch integration.
-- Auto-centering functionality.
+- 마이크로스테핑 기반 정밀 각도 제어.
+- 가속/감속 프로파일.
+- 리미트 스위치 통합.
+- 자동 센터링.
 
 ## Turbo Multi-Scan Compensation
 
-When you have multiple one-way scans (Forward/Backward) of the same sweep, you can merge them and run the proven trainer on a single combined event stream using `compensate_multiwindow_turbo.py`.
+같은 스윕의 여러 단방향 스캔(Forward/Backward)이 있을 때 `compensate_multiwindow_turbo.py`로 병합한 뒤 검증된 학습기를 단일 결합 이벤트 스트림에 적용할 수 있습니다.
 
 ### What it does
 
-- Accepts one segment, an explicit list, or a whole segments directory.
-- For Backward scans, flips polarity and reverses time before merging:
-- If polarity `p ∈ {0,1}`: `p := 1 − p`; then reverse time within the scan.
-- If polarity `p ∈ {−1,1}`: `p := −p`; then reverse time within the scan.
-- Concatenates scans on a continuous timeline (with a `1 μs` gap between scans) and calls `compensate_multiwindow_train_saved_params.py` under the hood.
+- 단일 세그먼트, 명시적 목록, 또는 세그먼트 디렉터리 전체를 입력으로 허용.
+- Backward 스캔은 병합 전에 polarity 반전 + 시간 역순 처리:
+- polarity `p ∈ {0,1}`이면: `p := 1 − p`; 이후 스캔 내 시간을 역순화.
+- polarity `p ∈ {−1,1}`이면: `p := −p`; 이후 스캔 내 시간을 역순화.
+- 스캔을 연속 타임라인으로 이어 붙이고(스캔 사이 `1 μs` 간격), 내부적으로 `compensate_multiwindow_train_saved_params.py` 호출.
 
 ### Usage
 
@@ -598,26 +598,26 @@ python compensate_multiwindow_turbo.py \
 
 ### Options
 
-- `--segment`, `--segments`, `--segments-dir`: choose your input set.
-- `--include {all|forward|backward}`: filter by scan direction.
-- `--sort {name|time}`: natural filename order or NPZ `start_time` order.
-- `--bin-width <μs>`: forwarded to the base trainer.
-- `--load-params`: reuse saved parameters (skip training and regenerate outputs quickly at new bin widths).
-- `--extra ...` after `--`: any additional flags are forwarded to the base trainer.
+- `--segment`, `--segments`, `--segments-dir`: 입력 세트 선택.
+- `--include {all|forward|backward}`: 스캔 방향 필터.
+- `--sort {name|time}`: 파일명 자연 정렬 또는 NPZ `start_time` 정렬.
+- `--bin-width <μs>`: 기본 학습기로 전달.
+- `--load-params`: 저장 파라미터 재사용(재학습 없이 새 bin 폭 결과를 빠르게 생성).
+- `--extra ...` 또는 `--` 뒤 플래그: 기본 학습기로 추가 옵션 전달.
 
 ### Speed scaling tip
 
-If your scan is `N×` faster than baseline, reduce `--bin-width` by the same factor (e.g., baseline `50 ms` -> `10×` faster -> `5 ms`: `--bin-width 5000`). You can train once (e.g., `5 ms`), then use `--load-params` to quickly regenerate results at `10 ms` without retraining.
+스캔이 기준 대비 `N×` 빠르면 `--bin-width`를 동일 배수로 줄이세요(예: 기준 `50 ms` -> `10×` 빠름 -> `5 ms`: `--bin-width 5000`). 예를 들어 `5 ms`에서 한 번 학습하고, `--load-params`로 `10 ms` 결과를 재학습 없이 빠르게 생성할 수 있습니다.
 
 ## Parameter Management
 
-The system supports comprehensive parameter save/load functionality.
+시스템은 파라미터 저장/불러오기 기능을 폭넓게 지원합니다.
 
 ### Save Formats
 
-- **NPZ**: Binary format for fast loading.
-- **JSON**: Human-readable with metadata.
-- **CSV**: Excel-compatible for manual inspection.
+- **NPZ**: 빠른 로딩을 위한 바이너리 형식.
+- **JSON**: 메타데이터를 포함한 사람이 읽기 쉬운 형식.
+- **CSV**: 수동 점검에 유용한 엑셀 호환 형식.
 
 ### Parameter Loading
 
@@ -631,18 +631,18 @@ python compensate_multiwindow_train_saved_params.py segment.npz \
 
 ### Parameter Files
 
-Files are automatically named with parameter count, such as: `*_learned_params_n13.*`.
+파일명에는 파라미터 개수가 자동 반영됩니다. 예: `*_learned_params_n13.*`.
 
 ## Memory Optimization
 
-The system uses chunked processing throughout:
+시스템 전반에 청크 기반 처리를 사용합니다.
 
 | Item | Detail |
 |---|---|
-| Chunk Size | Default `250000` events (configurable) |
-| Memory Efficient | Processes large datasets without GPU overflow |
-| Unified Variance | Maintains proper gradient flow for learning |
-| Progress Tracking | Real-time processing updates |
+| Chunk Size | 기본 `250000` events (설정 가능) |
+| Memory Efficient | 대형 데이터셋을 GPU OOM 없이 처리 |
+| Unified Variance | 학습을 위한 올바른 gradient 흐름 유지 |
+| Progress Tracking | 실시간 처리 진행 업데이트 |
 
 ## Output Structure
 
@@ -692,50 +692,50 @@ python compensate_multiwindow_train_saved_params.py segment.npz \
 
 ## Wavelength Mapping
 
-The system supports spectral visualization by mapping temporal evolution to wavelength:
+시스템은 시간 변화를 파장으로 매핑해 스펙트럼 시각화를 지원합니다.
 
 ```python
 # Linear mapping: time -> wavelength
 wavelength = wavelength_min + (t_normalized / t_max) * (wavelength_max - wavelength_min)
 ```
 
-**Default Range**: $380\text{–}680~\text{nm}$ (configurable).
+**Default Range**: $380\text{–}680~\text{nm}$ (설정 가능).
 
 ## Tips and Best Practices
 
 ### Parameter Selection
 
-- **Microstepping**: Use `32×` for smooth motion (Arduino).
-- **Bin Width**: Start with `50 ms` for optimization, `2 ms` for analysis.
-- **Temperature**: Higher values (around `5000`) for smoother boundaries.
-- **Smoothness**: `0.001` provides good regularization.
+- **Microstepping**: 부드러운 구동을 위해 `32×` 권장(Arduino).
+- **Bin Width**: 최적화 시작은 `50 ms`, 분석은 `2 ms` 권장.
+- **Temperature**: 더 매끄러운 경계를 위해 높은 값(`5000` 내외) 사용.
+- **Smoothness**: `0.001`이 일반적으로 좋은 정규화.
 
 ### Memory Management
 
-- **GPU Memory**: Use chunked processing with appropriate chunk size.
-- **Event Count**: `> 10^6` events recommended for stable learning.
-- **Iterations**: `1000` iterations usually sufficient.
+- **GPU Memory**: 적절한 청크 크기로 chunked processing 사용.
+- **Event Count**: 안정적 학습을 위해 `> 10^6` events 권장.
+- **Iterations**: 보통 `1000` 반복이면 충분.
 
 ### File Organization
 
-- Keep RAW files and segments in the same directory.
-- Parameter files are auto-detected by naming convention.
-- Use descriptive filename prefixes for organized output.
+- RAW 파일과 segments는 같은 디렉터리에 보관.
+- 파라미터 파일은 명명 규칙으로 자동 탐지.
+- 출력 정리를 위해 설명적인 파일명 접두사 사용.
 
 ## Development Notes
 
-- `versions.md` describes historical project eras and migration rationale.
-- `.githooks/pre-commit` blocks oversized/binary commits and non-code/doc file types.
-- `scripts/setup_hooks.sh` sets `core.hooksPath` to `.githooks`.
-- `archive_code_variants/` stores older script variants to keep root-level tooling focused.
+- `versions.md`에는 프로젝트의 역사적 단계와 마이그레이션 이유가 설명되어 있습니다.
+- `.githooks/pre-commit`은 과대형/바이너리 커밋 및 비코드/비문서 파일 유형을 차단합니다.
+- `scripts/setup_hooks.sh`는 `core.hooksPath`를 `.githooks`로 설정합니다.
+- `archive_code_variants/`는 루트 툴링을 단순하게 유지하기 위해 이전 스크립트 변형을 보관합니다.
 
-Known documentation drift (preserved intentionally for backward compatibility context):
+문서 드리프트(하위 호환 문맥 유지를 위해 의도적으로 보존):
 
-- Some older docs mention `sync_image_system/` or `dual_camera_gui.py`; current checkout contains `ImagingGUI/DualCamera_separate_transform.py` and SDK directories.
-- `ImagingGUI/README.md` still references `pip install -r requirements.txt`, but no root `requirements.txt` is present in this checkout.
-- `firmware/README.md` references several Arduino sketch subfolders that are not present in this checkout.
-- `versions.md` mentions legacy script names that differ from current root-level script names.
-- `i18n/` exists and currently includes `README.ar.md`, `README.es.md`, `README.fr.md`, `README.ja.md`, and `README.ko.md`; links for additional languages are retained as planned targets.
+- 일부 구문서는 `sync_image_system/` 또는 `dual_camera_gui.py`를 언급하지만, 현재 체크아웃에는 `ImagingGUI/DualCamera_separate_transform.py`와 SDK 디렉터리가 있습니다.
+- `ImagingGUI/README.md`는 여전히 `pip install -r requirements.txt`를 참조하지만, 현재 체크아웃 루트에는 `requirements.txt`가 없습니다.
+- `firmware/README.md`는 현재 체크아웃에 없는 여러 Arduino 스케치 하위 폴더를 참조합니다.
+- `versions.md`는 현재 루트 스크립트명과 다른 레거시 스크립트명을 언급합니다.
+- `i18n/`에는 현재 `README.ar.md`, `README.es.md`, `README.fr.md`, `README.ja.md`, `README.ko.md`가 포함되어 있으며, 추가 언어 링크는 계획 대상으로 유지됩니다.
 
 ## Troubleshooting
 
@@ -748,25 +748,25 @@ Known documentation drift (preserved intentionally for backward compatibility co
 | Turbo wrapper args ignored | Incorrect forwarding syntax | Pass trainer args after `--` (or use `--extra`) |
 | GUI issues | Tkinter/backend or SDK mismatch | Verify GUI backend and camera SDK availability |
 
-- **Parameter loading errors**: Ensure `--num_params` is compatible with the loaded parameter file.
-- **OOM / memory pressure**: Reduce `--chunk_size` and/or increase `--bin_width`.
-- **Weak compensation quality**: Increase `--iterations`, enable trainable parameters (`--a_trainable`, `--b_trainable`, optionally `--boundary_trainable`), and verify segmentation quality.
-- **No segment files produced**: Confirm RAW path, Metavision reader availability, and that `--segment_events` was passed.
-- **Turbo wrapper argument passing**: Put trainer args after `--` (or use `--extra`).
-- **GUI issues**: Verify Tkinter backend support and camera SDK availability on your platform.
+- **Parameter loading errors**: `--num_params`가 로드한 파라미터 파일과 호환되는지 확인하세요.
+- **OOM / memory pressure**: `--chunk_size`를 줄이고/또는 `--bin_width`를 늘리세요.
+- **Weak compensation quality**: `--iterations`를 늘리고, 학습 가능 파라미터(`--a_trainable`, `--b_trainable`, 필요 시 `--boundary_trainable`)를 활성화하고, 세그멘테이션 품질을 점검하세요.
+- **No segment files produced**: RAW 경로, Metavision reader 가용성, `--segment_events` 전달 여부를 확인하세요.
+- **Turbo wrapper argument passing**: 학습기 인자는 `--` 뒤(또는 `--extra`)에 전달하세요.
+- **GUI issues**: 플랫폼의 Tkinter 백엔드 및 카메라 SDK 가용성을 확인하세요.
 
 ## Roadmap
 
-- Improve dependency/bootstrap reproducibility (`requirements.txt` or environment lockfile).
-- Consolidate legacy script names and path references across docs.
-- Expand documented dataset schemas and expected NPZ field conventions.
-- Add regression-style tests for segmentation/compensation on small fixture data.
-- Continue integrating publication-quality analysis outputs from `align_*` pipelines.
-- Add/refresh the remaining multilingual README files under `i18n/` to fully match the language navigation links at top.
+- 의존성/부트스트랩 재현성 개선(`requirements.txt` 또는 환경 lockfile).
+- 문서 전반의 레거시 스크립트명/경로 참조 정리.
+- 데이터셋 스키마 및 예상 NPZ 필드 규약 문서 보강.
+- 소형 픽스처 데이터를 이용한 세그멘테이션/보상 회귀 테스트 추가.
+- `align_*` 파이프라인의 출판 품질 분석 출력 통합 지속.
+- 상단 언어 네비게이션 링크와 완전히 일치하도록 `i18n/`의 나머지 다국어 README 추가/갱신.
 
 ## Citation
 
-If this repository is useful in your research, please cite the Optica Open preprint:
+이 저장소가 연구에 도움이 되었다면 Optica Open 프리프린트를 인용해 주세요.
 
 ```bibtex
 @article{chen2025selfcalibrated,
@@ -781,38 +781,38 @@ If this repository is useful in your research, please cite the Optica Open prepr
 
 ## Acknowledgements
 
-- Optica Open preprint and associated project dissemination materials.
-- Hardware and software contributors across repository evolution captured in `versions/` and archived tooling.
-- Community support through GitHub Sponsors and associated project channels.
+- Optica Open 프리프린트 및 관련 프로젝트 확산 자료.
+- `versions/` 및 아카이브 툴링으로 기록된 저장소 발전 과정의 하드웨어/소프트웨어 기여자들.
+- GitHub Sponsors 및 연계 프로젝트 채널을 통한 커뮤니티 지원.
 
 ## License
 
-This project is released under the MIT License. See [`LICENSE`](LICENSE) for details.
+이 프로젝트는 MIT License로 배포됩니다. 자세한 내용은 [`LICENSE`](LICENSE)를 참조하세요.
 
 ## Contributing
 
-Contributions are welcome.
+기여를 환영합니다.
 
-- Start with existing scripts and documentation style.
-- Keep command-line examples reproducible with repository paths where possible.
-- If you add large datasets/outputs, ensure `.githooks/pre-commit` policies are respected.
+- 기존 스크립트와 문서 스타일을 기준으로 작업해 주세요.
+- 가능한 경우 저장소 경로를 사용하는 재현 가능한 CLI 예시를 유지해 주세요.
+- 대용량 데이터셋/출력을 추가할 때는 `.githooks/pre-commit` 정책 준수를 확인해 주세요.
 
-Note: a dedicated `CONTRIBUTING.md` is not present in this checkout. If needed, open an issue or submit a PR with the contribution workflow you propose.
+참고: 이 체크아웃에는 별도 `CONTRIBUTING.md`가 없습니다. 필요하면 이슈를 열거나 제안하는 기여 워크플로와 함께 PR을 제출해 주세요.
 
 ## Support / Sponsor
 
 | Channel | Link | Use |
 |---|---|---|
-| GitHub Sponsors | https://github.com/sponsors/lachlanchen | Ongoing project support |
-| Project site | https://lazying.art | Project updates and ecosystem links |
-| Community chat | https://chat.lazying.art | Community discussion |
-| Additional creator page | https://onlyideas.art | Related creator/research content |
-| Core kit purchase page | https://lazying.art/openhi-kit.html | Hardware starter kit for OpenHI workflow |
-| Promotion code | `OPTICA` | 30% off (as documented above) |
+| GitHub Sponsors | https://github.com/sponsors/lachlanchen | 지속적인 프로젝트 지원 |
+| Project site | https://lazying.art | 프로젝트 업데이트 및 생태계 링크 |
+| Community chat | https://chat.lazying.art | 커뮤니티 토론 |
+| Additional creator page | https://onlyideas.art | 관련 크리에이터/연구 콘텐츠 |
+| Core kit purchase page | https://lazying.art/openhi-kit.html | OpenHI 워크플로용 하드웨어 스타터 키트 |
+| Promotion code | `OPTICA` | 30% 할인(위 내용과 동일) |
 
 ---
 
 ### Notes
 
-- 📌 This README keeps legacy-path notes where repository evolution introduced naming/layout drift.
-- 🔒 If uncertain about older references, the text is preserved intentionally rather than removed.
+- 📌 이 README는 저장소 진화 과정에서 발생한 이름/레이아웃 드리프트를 반영해 레거시 경로 노트를 유지합니다.
+- 🔒 오래된 참조가 불확실한 경우, 삭제보다 보존을 우선해 의도적으로 텍스트를 남겨 두었습니다.
