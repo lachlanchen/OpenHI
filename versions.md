@@ -47,7 +47,7 @@ Current (root) pipeline scripts
 
 Archived legacy scripts
 
-- archive_code_variants/ contains old variants and legacy scripts (e.g., *.py.old, *_old.py), preserved for reference without cluttering the root.
+- versions/05_archive_code_variants/ contains old variants and legacy scripts (e.g., *.py.old, *_old.py), preserved for reference without cluttering the root.
 
 Rationale and method
 
@@ -59,4 +59,3 @@ Notes
 
 - The Nature/ symlink is left untouched.
 - If you want additional utilities or experiments moved into versions/ subfolders or into archive_*, please specify the files; moves are intentionally conservative.
-

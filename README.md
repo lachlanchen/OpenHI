@@ -153,7 +153,7 @@ OpenHI/
 ├── align_background_vs_reference_code/
 ├── align_data_vs_filter_code/
 ├── alignment_configs/
-├── archive_code_variants/
+├── versions/05_archive_code_variants/
 ├── outputs_root/
 ├── reference_filters/
 ├── reference_spectrum_2835/
@@ -727,7 +727,7 @@ wavelength = wavelength_min + (t_normalized / t_max) * (wavelength_max - wavelen
 - `versions.md` describes historical project eras and migration rationale.
 - `.githooks/pre-commit` blocks oversized/binary commits and non-code/doc file types.
 - `scripts/setup_hooks.sh` sets `core.hooksPath` to `.githooks`.
-- `archive_code_variants/` stores older script variants to keep root-level tooling focused.
+- `versions/05_archive_code_variants/` stores older script variants to keep root-level tooling focused.
 
 Known documentation drift (preserved intentionally for backward compatibility context):
 
