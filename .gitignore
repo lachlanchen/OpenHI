@@ -21,8 +21,9 @@
 /comparisons/reference_filters/
 !comparisons/reference_spectrum_2835/**
 !comparisons/reference_spectrum_lumileds/**
-# Alignment helper code with JSON/TXT assets (renamed paths)
-!align_background_vs_reference_code/**
+# Alignment helper code and configs under comparisons/
+!comparisons/align_background_vs_reference_code/**
+!comparisons/alignment_configs/**
 # Keep this local-only (do not track on GitHub)
 /align_data_vs_filter_code/
 # Ignore local agent instruction file
@@ -80,9 +81,9 @@ versions/
 !/*.txt
 !/*.csv
 !/*.json
-!outputs_root/**/*.txt
-!outputs_root/**/*.csv
-!outputs_root/**/*.json
+!comparisons/outputs_root/**/*.txt
+!comparisons/outputs_root/**/*.csv
+!comparisons/outputs_root/**/*.json
 !versions/**/code/**/*.txt
 !versions/**/code/**/*.csv
 !versions/**/code/**/*.json

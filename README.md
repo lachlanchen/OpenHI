@@ -124,7 +124,7 @@ Key hardware assets are kept alongside the code for quick access:
 | Microcontroller firmware | [`firmware/`](firmware/) |
 | Acquisition UI (desktop) | [`ImagingGUI/`](ImagingGUI/) |
 | Experiment/data references | [`comparisons/reference_spectrum_2835/`](comparisons/reference_spectrum_2835/), [`comparisons/reference_spectrum_lumileds/`](comparisons/reference_spectrum_lumileds/), [`references/`](references/) |
-| Alignment analysis | [`align_background_vs_reference_code/`](align_background_vs_reference_code/), [`align_data_vs_filter_code/`](align_data_vs_filter_code/) |
+| Alignment analysis | [`comparisons/align_background_vs_reference_code/`](comparisons/align_background_vs_reference_code/), [`comparisons/alignment_configs/`](comparisons/alignment_configs/) |
 
 ## Project Structure
 
@@ -150,11 +150,11 @@ OpenHI/
 ├── scan_compensation_gui_cloud.py
 ├── show_envi_spectrum_gui.py
 ├── simple_raw_reader.py
-├── align_background_vs_reference_code/
+├── comparisons/align_background_vs_reference_code/
 ├── align_data_vs_filter_code/
-├── alignment_configs/
+├── comparisons/alignment_configs/
 ├── versions/05_archive_code_variants/
-├── outputs_root/
+├── comparisons/outputs_root/
 ├── comparisons/reference_filters/
 ├── comparisons/reference_spectrum_2835/
 ├── comparisons/reference_spectrum_lumileds/
@@ -799,16 +799,13 @@ Contributions are welcome.
 
 Note: a dedicated `CONTRIBUTING.md` is not present in this checkout. If needed, open an issue or submit a PR with the contribution workflow you propose.
 
-## Support / Sponsor
+## ❤️ Support
 
-| Channel | Link | Use |
+If this project is useful to you, these links directly support ongoing maintenance and hardware iteration.
+
+| Donate | PayPal | Stripe |
 |---|---|---|
-| GitHub Sponsors | https://github.com/sponsors/lachlanchen | Ongoing project support |
-| Project site | https://lazying.art | Project updates and ecosystem links |
-| Community chat | https://chat.lazying.art | Community discussion |
-| Additional creator page | https://onlyideas.art | Related creator/research content |
-| Core kit purchase page | https://lazying.art/openhi-kit.html | Hardware starter kit for OpenHI workflow |
-| Promotion code | `OPTICA` | 30% off (as documented above) |
+| [![Donate](https://camo.githubusercontent.com/24a4914f0b42c6f435f9e101621f1e52535b02c225764b2f6cc99416926004b7/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f446f6e6174652d4c617a79696e674172742d3045413545393f7374796c653d666f722d7468652d6261646765266c6f676f3d6b6f2d6669266c6f676f436f6c6f723d7768697465)](https://chat.lazying.art/donate) | [![PayPal](https://camo.githubusercontent.com/d0f57e8b016517a4b06961b24d0ca87d62fdba16e18bbdb6aba28e978dc0ea21/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f50617950616c2d526f6e677a686f754368656e2d3030343537433f7374796c653d666f722d7468652d6261646765266c6f676f3d70617970616c266c6f676f436f6c6f723d7768697465)](https://paypal.me/RongzhouChen) | [![Stripe](https://camo.githubusercontent.com/1152dfe04b6943afe3a8d2953676749603fb9f95e24088c92c97a01a897b4942/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f5374726970652d446f6e6174652d3633354246463f7374796c653d666f722d7468652d6261646765266c6f676f3d737472697065266c6f676f436f6c6f723d7768697465)](https://buy.stripe.com/aFadR8gIaflgfQV6T4fw400) |
 
 ---
 

@@ -2,11 +2,11 @@
 """Plot non-overlapping window background traces for multiple bin sizes.
 
 Example:
-  python align_background_vs_reference_code/plot_background_trace_multibin.py \
+  python comparisons/align_background_vs_reference_code/plot_background_trace_multibin.py \
     --segment scan_angle_20_lumileds/angle_20_blank_20250922_170433/angle_20_blank_event_20250922_170433_segments/Scan_1_Forward_events.npz \
     --window_ms 1 5 25 50 \
     --stride_ms 1 \
-    --output_root align_background_vs_reference_code
+    --output_root comparisons/align_background_vs_reference_code
 """
 from __future__ import annotations
 
@@ -19,12 +19,12 @@ from typing import List, Tuple
 import matplotlib.pyplot as plt
 import numpy as np
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 import visualize_cumulative_weighted as vcw  # noqa: E402
-from align_background_vs_reference_code.compare_reconstruction_to_gt import moving_average  # noqa: E402
+from comparisons.align_background_vs_reference_code.compare_reconstruction_to_gt import moving_average  # noqa: E402
 
 
 def sliding_window_sum(
@@ -129,7 +129,7 @@ def parse_args() -> argparse.Namespace:
     ap.add_argument("--sensor_height", type=int, default=720)
     ap.add_argument("--pos_scale", type=float, default=1.0)
     ap.add_argument("--smooth_div", type=float, default=200.0, help="Smoothing divisor (higher = less smoothing)")
-    ap.add_argument("--output_root", type=Path, default=REPO_ROOT / "align_background_vs_reference_code")
+    ap.add_argument("--output_root", type=Path, default=REPO_ROOT / "comparisons/align_background_vs_reference_code")
     ap.add_argument("--font-scale", type=float, default=1.2, help="Font scale for publication styling")
     ap.add_argument("--show", action="store_true", help="Show plot")
     return ap.parse_args()

@@ -16,7 +16,7 @@ from typing import Dict, List, Sequence, Tuple
 import matplotlib.pyplot as plt
 import numpy as np
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
@@ -324,7 +324,7 @@ def run_dataset(
         },
     }
 
-    out_dir = args.output_root if args.output_root is not None else ensure_output_dir(REPO_ROOT / "align_background_vs_reference_code")
+    out_dir = args.output_root if args.output_root is not None else ensure_output_dir(REPO_ROOT / "comparisons/align_background_vs_reference_code")
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     fig, axes = plt.subplots(1, 3, figsize=(12.0, 3.6), sharex=True)
@@ -414,7 +414,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--auto_neg_max", type=float, default=3.0)
     parser.add_argument("--plateau_frac", type=float, default=0.05)
     parser.add_argument("--xlim", type=float, nargs=2, default=(300.0, 900.0))
-    parser.add_argument("--output_root", type=Path, default=REPO_ROOT / "align_background_vs_reference_code")
+    parser.add_argument("--output_root", type=Path, default=REPO_ROOT / "comparisons/align_background_vs_reference_code")
     parser.add_argument("--out_dir", type=Path, default=None, help="Optional output directory (single folder)")
     return parser.parse_args()
 
@@ -450,7 +450,7 @@ def main() -> None:
         return
 
     if args.preset == "both":
-        out_dir = args.output_root if args.output_root is not None else ensure_output_dir(REPO_ROOT / "align_background_vs_reference_code")
+        out_dir = args.output_root if args.output_root is not None else ensure_output_dir(REPO_ROOT / "comparisons/align_background_vs_reference_code")
         out_dir = Path(out_dir)
         out_dir.mkdir(parents=True, exist_ok=True)
         combined = {}
