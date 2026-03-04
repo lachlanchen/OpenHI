@@ -22,7 +22,8 @@
 !reference_spectrum_lumileds/**
 # Alignment helper code with JSON/TXT assets (renamed paths)
 !align_background_vs_reference_code/**
-!align_data_vs_filter_code/**
+# Keep this local-only (do not track on GitHub)
+/align_data_vs_filter_code/
 # Ignore local agent instruction file
 AGENTS.md
 !**/*.tex
