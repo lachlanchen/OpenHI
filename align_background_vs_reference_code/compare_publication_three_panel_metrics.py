@@ -427,16 +427,16 @@ def main() -> None:
         "lumileds": {
             "segment": REPO_ROOT / "scan_angle_20_lumileds/angle_20_blank_20250922_170433/angle_20_blank_event_20250922_170433_segments/Scan_1_Forward_events.npz",
             "gt_files": [
-                REPO_ROOT / "reference_spectrum_lumileds/USB2F042671_16-04-56-391.txt",
-                REPO_ROOT / "reference_spectrum_lumileds/USB2F042671_16-04-36-993.txt",
+                REPO_ROOT / "comparisons/reference_spectrum_lumileds/USB2F042671_16-04-56-391.txt",
+                REPO_ROOT / "comparisons/reference_spectrum_lumileds/USB2F042671_16-04-36-993.txt",
             ],
             "suffix": "lumileds",
         },
         "2835": {
             "segment": REPO_ROOT / "scan_angle_20_led_2835b/angle_20_blank_2835_20250925_184747/angle_20_blank_2835_event_20250925_184747_segments/Scan_1_Forward_events.npz",
             "gt_files": [
-                REPO_ROOT / "reference_spectrum_2835/USB2F042671_16-05-20-488.txt",
-                REPO_ROOT / "reference_spectrum_2835/USB2F042671_16-05-22-288.txt",
+                REPO_ROOT / "comparisons/reference_spectrum_2835/USB2F042671_16-05-20-488.txt",
+                REPO_ROOT / "comparisons/reference_spectrum_2835/USB2F042671_16-05-22-288.txt",
             ],
             "suffix": "2835",
         },

@@ -123,7 +123,7 @@ Key hardware assets are kept alongside the code for quick access:
 | PCB layouts | [`PCB/`](PCB/) |
 | Microcontroller firmware | [`firmware/`](firmware/) |
 | Acquisition UI (desktop) | [`ImagingGUI/`](ImagingGUI/) |
-| Experiment/data references | [`reference_spectrum_2835/`](reference_spectrum_2835/), [`reference_spectrum_lumileds/`](reference_spectrum_lumileds/), [`references/`](references/) |
+| Experiment/data references | [`comparisons/reference_spectrum_2835/`](comparisons/reference_spectrum_2835/), [`comparisons/reference_spectrum_lumileds/`](comparisons/reference_spectrum_lumileds/), [`references/`](references/) |
 | Alignment analysis | [`align_background_vs_reference_code/`](align_background_vs_reference_code/), [`align_data_vs_filter_code/`](align_data_vs_filter_code/) |
 
 ## Project Structure
@@ -155,9 +155,9 @@ OpenHI/
 ├── alignment_configs/
 ├── versions/05_archive_code_variants/
 ├── outputs_root/
-├── reference_filters/
-├── reference_spectrum_2835/
-├── reference_spectrum_lumileds/
+├── comparisons/reference_filters/
+├── comparisons/reference_spectrum_2835/
+├── comparisons/reference_spectrum_lumileds/
 ├── references/
 ├── i18n/
 └── versions/

@@ -17,9 +17,10 @@
 !3D/**
 !PCB/**
 # Reference datasets and filter metadata (new paths)
-!reference_filters/**
-!reference_spectrum_2835/**
-!reference_spectrum_lumileds/**
+# Keep this local-only (do not track on GitHub)
+/comparisons/reference_filters/
+!comparisons/reference_spectrum_2835/**
+!comparisons/reference_spectrum_lumileds/**
 # Alignment helper code with JSON/TXT assets (renamed paths)
 !align_background_vs_reference_code/**
 # Keep this local-only (do not track on GitHub)
