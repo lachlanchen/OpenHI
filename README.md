@@ -8,7 +8,7 @@
 [![Sponsor](https://img.shields.io/badge/Sponsor-GitHub%20Sponsors-pink.svg)](https://github.com/sponsors/lachlanchen)
 [![Hardware](https://img.shields.io/badge/Hardware-3D%20%7C%20PCB%20%7C%20Firmware-success.svg)](#repository-map)
 [![GUI](https://img.shields.io/badge/GUI-Imaging%20Tools-0ea5e9.svg)](#additional-tools)
-[![Paper](https://img.shields.io/badge/Preprint-Optica%20Open-ff6b6b.svg)](https://doi.org/10.1364/opticaopen.30739151)
+[![Paper](https://img.shields.io/badge/Paper-Optica-ff6b6b.svg)](https://doi.org/10.1364/OPTICA.585766)
 [![i18n](https://img.shields.io/badge/i18n-5%20ready%20%7C%206%20planned-22c55e.svg)](#internationalization)
 [![Pipeline](https://img.shields.io/badge/Pipeline-Segment%20%E2%86%92%20Compensate%20%E2%86%92%20Visualize-0ea5e9.svg)](#overview)
 
@@ -26,7 +26,7 @@ A comprehensive pipeline for reconstructing spectra from event cameras with disp
 | Main stages | `segment_robust_fixed.py` -> `compensate_multiwindow_train_saved_params.py` -> visualization scripts |
 | Hardware docs in repo | `3D/`, `PCB/`, `firmware/`, `BOM/` |
 | Desktop tools | `scan_compensation_gui_cloud.py`, `ImagingGUI/DualCamera_separate_transform.py` |
-| Canonical paper | [Optica Open preprint (DOI: 10.1364/opticaopen.30739151)](https://doi.org/10.1364/opticaopen.30739151) |
+| Canonical paper | [Optica article (DOI: 10.1364/OPTICA.585766)](https://doi.org/10.1364/OPTICA.585766) |
 | i18n in this checkout | `README.ar.md`, `README.es.md`, `README.fr.md`, `README.ja.md`, `README.ko.md` |
 
 <p align="center">
@@ -37,7 +37,7 @@ A comprehensive pipeline for reconstructing spectra from event cameras with disp
 *Left: modular transmission microscope with a motorised grating illumination arm and vertical detection stack. Right: data-acquisition GUI used to monitor segmentation, compensation, and reconstructions in real time.*
 
 > [!TIP]
-> Purchase the core development kit (excluding camera, tube lens, and optical table) for the paper [Self-calibrated neuromorphic hyperspectral imaging](https://doi.org/10.1364/opticaopen.30739151) preprinted on Optica Open:
+> Purchase the core development kit (excluding camera, tube lens, and optical table) for the paper [Self-calibrated neuromorphic hyperspectral derivative imaging](https://doi.org/10.1364/OPTICA.585766) published in Optica:
 > - https://lazying.art/openhi-kit.html
 > - Promotion code for 30% off: `OPTICA`
 
@@ -766,22 +766,26 @@ Known documentation drift (preserved intentionally for backward compatibility co
 
 ## Citation
 
-If this repository is useful in your research, please cite the Optica Open preprint:
+If this repository is useful in your research, please cite the Optica article:
 
 ```bibtex
-@article{chen2025selfcalibrated,
+@article{chen2026self,
   title   = {Self-calibrated neuromorphic hyperspectral derivative imaging},
-  author  = {Chen, Rongzhou and Wang, Chutian and Li, Yuxing and Cao, Yuqing and Zhu, Shuo and Lam, Edmund},
-  year    = {2025},
-  journal = {Optica Open},
-  note    = {Preprint},
-  doi     = {10.1364/opticaopen.30739151}
+  author  = {Chen, Rongzhou and Wang, Chutian and Li, Yuxing and Cao, Yuqing and Zhu, Shuo and Lam, Edmund Y},
+  journal = {Optica},
+  volume  = {13},
+  number  = {4},
+  pages   = {587--590},
+  year    = {2026},
+  publisher = {Optica Publishing Group},
+  doi     = {10.1364/OPTICA.585766},
+  url     = {https://doi.org/10.1364/OPTICA.585766}
 }
 ```
 
 ## Acknowledgements
 
-- Optica Open preprint and associated project dissemination materials.
+- Published Optica article and associated project dissemination materials.
 - Hardware and software contributors across repository evolution captured in `versions/` and archived tooling.
 - Community support through GitHub Sponsors and associated project channels.
 
