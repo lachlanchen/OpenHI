@@ -1,4 +1,4 @@
-[English](README.md) · [العربية](i18n/README.ar.md) · [Español](i18n/README.es.md) · [Français](i18n/README.fr.md) · [日本語](i18n/README.ja.md) · [한국어](i18n/README.ko.md) · [Tiếng Việt](i18n/README.vi.md) · [中文 (简体)](i18n/README.zh-Hans.md) · [中文（繁體）](i18n/README.zh-Hant.md) · [Deutsch](i18n/README.de.md) · [Русский](i18n/README.ru.md)
+🌐 **Languages:** [English](README.md) · [العربية](i18n/README.ar.md) · [Español](i18n/README.es.md) · [Français](i18n/README.fr.md) · [日本語](i18n/README.ja.md) · [한국어](i18n/README.ko.md) · [Tiếng Việt](i18n/README.vi.md) · [中文 (简体)](i18n/README.zh-Hans.md) · [中文（繁體）](i18n/README.zh-Hant.md) · [Deutsch](i18n/README.de.md) · [Русский](i18n/README.ru.md)
 
 # Self-Calibrated Neuromorphic Hyperspectral Imaging (OpenHI)
 
@@ -9,14 +9,33 @@
 [![Hardware](https://img.shields.io/badge/Hardware-3D%20%7C%20PCB%20%7C%20Firmware-success.svg)](#repository-map)
 [![GUI](https://img.shields.io/badge/GUI-Imaging%20Tools-0ea5e9.svg)](#additional-tools)
 [![Paper](https://img.shields.io/badge/Paper-Optica-ff6b6b.svg)](https://doi.org/10.1364/OPTICA.585766)
-[![i18n](https://img.shields.io/badge/i18n-5%20ready%20%7C%206%20planned-22c55e.svg)](#internationalization)
+[![i18n](https://img.shields.io/badge/i18n-10%20translated%20%7C%20English%20base-22c55e.svg)](#internationalization)
 [![Pipeline](https://img.shields.io/badge/Pipeline-Segment%20%E2%86%92%20Compensate%20%E2%86%92%20Visualize-0ea5e9.svg)](#overview)
+[![Quick Start](https://img.shields.io/badge/QuickStart-5%20min%20path-16a34a.svg)](#quick-start-5-min-path)
+[![BOM](https://img.shields.io/badge/BOM-Core%20module%20available-f59e0b.svg)](#bill-of-materials-core-module)
+[![Quickstart Doc](https://img.shields.io/badge/Guide-QUICKSTART.md-334155.svg)](QUICKSTART.md)
 
 
 > [!NOTE]
-> i18n status in this checkout: `ar`, `es`, `fr`, `ja`, `ko` are present under `i18n/`. Additional language links are kept for compatibility with planned translation coverage.
+> i18n status in this checkout: all linked translation files are present under `i18n/` (`ar`, `de`, `es`, `fr`, `ja`, `ko`, `ru`, `vi`, `zh-Hans`, `zh-Hant`) with English as the root canonical README.
 
 A comprehensive pipeline for reconstructing spectra from event cameras with dispersed light illumination (e.g., diffraction grating). The system records intensity change events $e = (x, y, t, p)$ where $p \in \{-1, +1\}$ indicates polarity of log-intensity change, and automatically infers scan timing and calibration metadata ("auto info") directly from the event stream.
+
+> [!IMPORTANT]
+> This README is the canonical technical source for the repository root. Localized files under `i18n/` should mirror section and header evolution while keeping exactly one language-options line at the top.
+
+## Quick Access
+
+| Need | Jump to |
+|---|---|
+| Start in ~5 minutes | [Quick Start (5-Min Path) ⚡](#quick-start-5-min-path) |
+| Run the full pipeline wrapper | [`scripts/run_scan_pipeline.sh`](scripts/run_scan_pipeline.sh) |
+| Understand script flow | [Overview 🔭](#overview), [Core Scripts 🧠](#core-scripts) |
+| Tune parameters | [Configuration 🎛️](#configuration), [Configuration Examples 🧩](#configuration-examples) |
+| Use GUI tools | [Additional Tools 🛠️](#additional-tools) |
+| Hardware docs (BOM, PCB, 3D, firmware) | [Repository Map 🗺️](#repository-map) |
+| Multilingual maintenance rules | [Internationalization 🌍](#internationalization) |
+| Sponsor and support links | [Support / Sponsor 💖](#support--sponsor) |
 
 ## At a Glance
 
@@ -27,7 +46,17 @@ A comprehensive pipeline for reconstructing spectra from event cameras with disp
 | Hardware docs in repo | `3D/`, `PCB/`, `firmware/`, `BOM/` |
 | Desktop tools | `scan_compensation_gui_cloud.py`, `ImagingGUI/DualCamera_separate_transform.py` |
 | Canonical paper | [Optica article (DOI: 10.1364/OPTICA.585766)](https://doi.org/10.1364/OPTICA.585766) |
-| i18n in this checkout | `README.ar.md`, `README.es.md`, `README.fr.md`, `README.ja.md`, `README.ko.md` |
+| i18n in this checkout | `README.ar.md`, `README.de.md`, `README.es.md`, `README.fr.md`, `README.ja.md`, `README.ko.md`, `README.ru.md`, `README.vi.md`, `README.zh-Hans.md`, `README.zh-Hant.md` |
+
+### Compatibility Snapshot
+
+| Area | Current repository reality |
+|---|---|
+| Python baseline | `3.9+` recommended (some `ImagingGUI/` utilities note `3.10+`) |
+| Main pipeline launcher | `scripts/run_scan_pipeline.sh` |
+| Core training script | `compensate_multiwindow_train_saved_params.py` |
+| Hardware collateral | Present under `3D/`, `PCB/`, `BOM/`, `firmware/` |
+| Multilingual docs | `i18n/` contains all 10 linked language files |
 
 <p align="center">
   <img src="images/device_setup.png" alt="Device setup" width="24%">
@@ -43,6 +72,7 @@ A comprehensive pipeline for reconstructing spectra from event cameras with disp
 
 ## Contents
 
+- [Quick Access ⚡](#quick-access)
 - [At a Glance 📌](#at-a-glance)
 - [Overview 🔭](#overview)
 - [Features ✨](#features)
@@ -94,6 +124,22 @@ This pipeline provides three main stages:
 | 3. Visualize | Overlay learned boundaries and compare original vs. compensated time-binned frames | `visualize_boundaries_and_frames.py`, `visualize_cumulative_compare.py` |
 
 The repository also includes hardware assets, acquisition GUI code, and archival experiment branches under `versions/`.
+
+### Pipeline Legend
+
+| Icon | Meaning |
+|---|---|
+| 🧩 | Segmentation and scan splitting |
+| 🧠 | Compensation and parameter learning |
+| 🖼️ | Visual diagnostics and output inspection |
+| 🌈 | Wavelength mapping and spectral rendering |
+
+### Scope and Assumptions
+
+- This repository is research-oriented and includes active scripts plus archival experiments and results.
+- Commands in this README assume execution from repository root unless otherwise noted.
+- Several optional workflows depend on external SDKs and local datasets that are not bundled here.
+- If a command mentions a historical path that no longer exists, prefer the updated root scripts and comparisons paths documented in this README.
 
 ## Features
 
@@ -214,6 +260,13 @@ If using Git hooks for large-file hygiene:
 bash scripts/setup_hooks.sh
 ```
 
+Recommended quick sanity checks:
+
+```bash
+python -c "import numpy, torch, matplotlib; print('core deps ok')"
+python -c "import torch; print('cuda:', torch.cuda.is_available())"
+```
+
 ## Usage
 
 ### Basic Workflow (current root scripts)
@@ -246,6 +299,28 @@ python visualize_cumulative_compare.py \
 
 ```bash
 scripts/run_scan_pipeline.sh /path/to/dataset_dir [raw_file]
+```
+
+### Command-to-Output Reference
+
+| Step | Command entrypoint | Primary output |
+|---|---|---|
+| Segment scans | `segment_robust_fixed.py` | `*_segments/Scan_*_{Forward,Backward}_events.npz` |
+| Train compensation | `compensate_multiwindow_train_saved_params.py` | `*learned_params_n*.{npz,json,csv}` plus diagnostics |
+| Boundary and frame diagnostics | `visualize_boundaries_and_frames.py` | timestamped visualization folder with overlays and bins |
+| Cumulative diagnostics | `visualize_cumulative_compare.py`, `visualize_cumulative_weighted.py` | cumulative and statistical plots for scan quality checks |
+| Convenience wrapper | `scripts/run_scan_pipeline.sh` | end-to-end segmentation, training, and visualization |
+
+### Minimal Smoke Test
+
+Use this when you want to validate script wiring on an existing segment NPZ before a longer optimization run:
+
+```bash
+python visualize_boundaries_and_frames.py /path/to/Scan_1_Forward_events.npz \
+  --sample_rate 0.05 --sensor_width 1280 --sensor_height 720
+
+python visualize_cumulative_compare.py /path/to/Scan_1_Forward_events.npz \
+  --sensor_width 1280 --sensor_height 720
 ```
 
 Environment knobs supported by `scripts/run_scan_pipeline.sh`:
