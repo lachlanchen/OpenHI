@@ -1,48 +1,77 @@
 [English](../README.md) · [العربية](README.ar.md) · [Español](README.es.md) · [Français](README.fr.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Tiếng Việt](README.vi.md) · [中文 (简体)](README.zh-Hans.md) · [中文（繁體）](README.zh-Hant.md) · [Deutsch](README.de.md) · [Русский](README.ru.md)
 
-
 # التصوير الطيفي فائق الدقة العصبي ذاتي المعايرة (OpenHI)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](#prerequisites)
 [![Status](https://img.shields.io/badge/Status-Research%20Pipeline-informational.svg)](#overview)
 [![Sponsor](https://img.shields.io/badge/Sponsor-GitHub%20Sponsors-pink.svg)](https://github.com/sponsors/lachlanchen)
 [![Hardware](https://img.shields.io/badge/Hardware-3D%20%7C%20PCB%20%7C%20Firmware-success.svg)](#repository-map)
 [![GUI](https://img.shields.io/badge/GUI-Imaging%20Tools-0ea5e9.svg)](#additional-tools)
-[![Paper](https://img.shields.io/badge/Preprint-Optica%20Open-ff6b6b.svg)](https://doi.org/10.1364/opticaopen.30739151)
-[![i18n](https://img.shields.io/badge/i18n-5%20ready%20%7C%206%20planned-22c55e.svg)](#internationalization)
+[![Paper](https://img.shields.io/badge/Paper-Optica-ff6b6b.svg)](https://doi.org/10.1364/OPTICA.585766)
+[![i18n](https://img.shields.io/badge/i18n-10%20translated%20%7C%20English%20base-22c55e.svg)](#internationalization)
 [![Pipeline](https://img.shields.io/badge/Pipeline-Segment%20%E2%86%92%20Compensate%20%E2%86%92%20Visualize-0ea5e9.svg)](#overview)
+[![Quick Start](https://img.shields.io/badge/QuickStart-5%20min%20path-16a34a.svg)](#quick-start-5-min-path)
+[![BOM](https://img.shields.io/badge/BOM-Core%20module%20available-f59e0b.svg)](#bill-of-materials-core-module)
+[![Quickstart Doc](https://img.shields.io/badge/Guide-QUICKSTART.md-334155.svg)](../QUICKSTART.md)
 
 > [!NOTE]
-> حالة i18n في هذا الإصدار المحلي: الملفات `ar`, `es`, `fr`, `ja`, `ko` موجودة تحت `i18n/`. تم الإبقاء على روابط اللغات الإضافية للتوافق مع خطة الترجمة المستقبلية.
+> حالة i18n في هذا الإصدار المحلي: جميع ملفات الترجمة المرتبطة موجودة ضمن `i18n/` (`ar`, `de`, `es`, `fr`, `ja`, `ko`, `ru`, `vi`, `zh-Hans`, `zh-Hant`) مع اعتماد الإنجليزية كملف README مرجعي أساسي.
 
-منظومة متكاملة لإعادة بناء الأطياف من كاميرات الأحداث تحت إضاءة مشتتة (مثل محزوز الحيود). يسجّل النظام أحداث تغيّر الشدة بالشكل $e = (x, y, t, p)$ حيث يشير $p \in \{-1, +1\}$ إلى قطبية تغيّر لوغاريتم الشدة، ويستنتج تلقائيًا توقيت المسح وبيانات المعايرة الوصفية ("auto info") مباشرةً من تيار الأحداث.
+مسار عمل شامل لإعادة بناء الأطياف من كاميرات الأحداث تحت إضاءة ضوئية مشتتة (مثل محزوز حيود). يسجّل النظام أحداث تغيّر الشدة بالشكل $e = (x, y, t, p)$ حيث $p \in \{-1, +1\}$ يعبّر عن قطبية تغيّر لوغاريتم الشدة، كما يستنتج تلقائيًا توقيت المسح وبيانات المعايرة الوصفية ("auto info") مباشرةً من تيار الأحداث.
+
+> [!IMPORTANT]
+> هذا README هو المصدر التقني المرجعي في جذر المستودع. يجب أن تعكس الملفات المحلية تحت `i18n/` تطور الأقسام/العناوين، مع سطر واحد فقط لخيارات اللغة في الأعلى (من دون تكرار شريط اللغات).
+
+## Quick Access
+
+| الحاجة | الانتقال السريع |
+|---|---|
+| بدء التشغيل خلال ~5 دقائق | [Quick Start (5-Min Path) ⚡](#quick-start-5-min-path) |
+| تشغيل الغلاف الكامل للمسار | [`scripts/run_scan_pipeline.sh`](../scripts/run_scan_pipeline.sh) |
+| فهم تدفق السكربتات | [Overview 🔭](#overview)، [Core Scripts 🧠](#core-scripts) |
+| ضبط المعاملات | [Configuration 🎛️](#configuration)، [Configuration Examples 🧩](#configuration-examples) |
+| استخدام أدوات GUI | [Additional Tools 🛠️](#additional-tools) |
+| توثيق العتاد (BOM/PCB/3D/Firmware) | [Repository Map 🗺️](#repository-map) |
+| قواعد صيانة التعدد اللغوي | [Internationalization 🌍](#internationalization) |
+| روابط الدعم/الرعاية | [Support / Sponsor 💖](#support--sponsor) |
 
 ## At a Glance
 
-| Item | Details |
+| العنصر | التفاصيل |
 |---|---|
-| Core idea | تصوير طيفي اشتقاقي ذاتي المعايرة من تيارات الأحداث |
-| Main stages | `segment_robust_fixed.py` -> `compensate_multiwindow_train_saved_params.py` -> visualization scripts |
-| Hardware docs in repo | `3D/`, `PCB/`, `firmware/`, `BOM/` |
-| Desktop tools | `scan_compensation_gui_cloud.py`, `ImagingGUI/DualCamera_separate_transform.py` |
-| Canonical paper | [Optica Open preprint (DOI: 10.1364/opticaopen.30739151)](https://doi.org/10.1364/opticaopen.30739151) |
-| i18n in this checkout | `README.ar.md`, `README.es.md`, `README.fr.md`, `README.ja.md`, `README.ko.md` |
+| الفكرة الأساسية | تصوير طيفي اشتقاقي ذاتي المعايرة من تيارات الأحداث |
+| المراحل الرئيسية | `segment_robust_fixed.py` -> `compensate_multiwindow_train_saved_params.py` -> سكربتات التصوّر |
+| توثيق العتاد داخل المستودع | `3D/`, `PCB/`, `firmware/`, `BOM/` |
+| أدوات سطح المكتب | `scan_compensation_gui_cloud.py`, `ImagingGUI/DualCamera_separate_transform.py` |
+| الورقة المرجعية | [مقالة Optica (DOI: 10.1364/OPTICA.585766)](https://doi.org/10.1364/OPTICA.585766) |
+| i18n في هذا الإصدار | `README.ar.md`, `README.de.md`, `README.es.md`, `README.fr.md`, `README.ja.md`, `README.ko.md`, `README.ru.md`, `README.vi.md`, `README.zh-Hans.md`, `README.zh-Hant.md` |
+
+### Compatibility Snapshot
+
+| المجال | الواقع الحالي في المستودع |
+|---|---|
+| خط أساس Python | يوصى بـ `3.9+` (وبعض أدوات `ImagingGUI/` تشير إلى `3.10+`) |
+| مشغّل المسار الرئيسي | `scripts/run_scan_pipeline.sh` |
+| سكربت التدريب الأساسي | `compensate_multiwindow_train_saved_params.py` |
+| أصول العتاد | موجودة ضمن `3D/`, `PCB/`, `BOM/`, `firmware/` |
+| التوثيق متعدد اللغات | يحتوي `i18n/` على ملفات اللغات العشر المرتبطة |
 
 <p align="center">
-  <img src="images/device_setup.png" alt="Device setup" width="24%">
-  <img src="images/data_acquisition_gui.png" alt="Acquisition GUI" width="74%">
+  <img src="../images/device_setup.png" alt="Device setup" width="24%">
+  <img src="../images/data_acquisition_gui.png" alt="Acquisition GUI" width="74%">
 </p>
 
-*يسارًا: مجهر نفاذية معياري مع ذراع إضاءة بمحزوز متحرك آليًا ومكدس كشف عمودي. يمينًا: واجهة جمع البيانات المستخدمة لمراقبة التقسيم والتعويض وإعادة البناء لحظيًا.*
+*يسارًا: مجهر نفاذية معياري مع ذراع إضاءة بمحزوز متحرك آليًا ومكدس كشف عمودي. يمينًا: واجهة جمع بيانات لمراقبة التقسيم والتعويض وإعادة البناء في الزمن الحقيقي.*
 
 > [!TIP]
-> يمكنك شراء حزمة التطوير الأساسية (باستثناء الكاميرا، وعدسة الأنبوب، والطاولة البصرية) الخاصة بورقة [Self-calibrated neuromorphic hyperspectral imaging](https://doi.org/10.1364/opticaopen.30739151) المنشورة كنسخة تمهيدية على Optica Open:
+> اشترِ حزمة التطوير الأساسية (من دون الكاميرا، وعدسة الأنبوب، والطاولة البصرية) الخاصة بورقة [Self-calibrated neuromorphic hyperspectral derivative imaging](https://doi.org/10.1364/OPTICA.585766) المنشورة في Optica:
 > - https://lazying.art/openhi-kit.html
-> - رمز خصم 30%: `OPTICA`
+> - رمز ترويجي بخصم 30%: `OPTICA`
 
 ## Contents
 
+- [Quick Access ⚡](#quick-access)
 - [At a Glance 📌](#at-a-glance)
 - [Overview 🔭](#overview)
 - [Features ✨](#features)
@@ -74,9 +103,12 @@
 - [Contributing 🤝](#contributing)
 - [Support / Sponsor 💖](#support--sponsor)
 
+> [!IMPORTANT]
+> سياسة مصدر المحتوى المرجعي في هذا المستودع: أبقِ `README.md` الإنجليزي في الجذر كمرجع تقني، واعمَل على عكس تطور الأقسام والعناوين في كل ملفات `i18n/README.*.md` مع سطر واحد فقط لخيارات اللغة في الأعلى.
+
 ## Overview
 
-عندما تمسح الإضاءة عبر الأطوال الموجية بمرور الزمن، يشفّر تيار الأحداث مشتقةً زمنية للطيف الأساسي على محور التشتت.
+عندما تتحرك الإضاءة عبر الأطوال الموجية بمرور الزمن، يشفّر تيار الأحداث مشتقة زمنية من الطيف الكامن على محور التشتت.
 
 ```text
 RAW event recording
@@ -85,46 +117,62 @@ RAW event recording
    -> frame/cumulative/wavelength diagnostics
 ```
 
+### Pipeline Legend
+
+| الأيقونة | المعنى |
+|---|---|
+| 🧩 | التقسيم / فصل المسحات |
+| 🧠 | التعويض / تعلم المعاملات |
+| 🖼️ | تشخيصات مرئية / فحص المخرجات |
+| 🌈 | تعيين الأطوال الموجية / التصيير الطيفي |
+
 يوفّر هذا المسار ثلاث مراحل رئيسية:
 
-| Stage | Purpose | Primary script(s) |
+| المرحلة | الغرض | السكربتات الأساسية |
 |---|---|---|
-| 1. Segment | إيجاد توقيت المسح وتقسيم التسجيلات إلى مسارات أمامية/خلفية | `segment_robust_fixed.py` |
-| 2. Compensate | تقدير تشوّه زمني خطي-قطعي لإزالة الميل الزمني الناتج عن المسح | `compensate_multiwindow_train_saved_params.py` |
-| 3. Visualize | تراكب الحدود المتعلَّمة ومقارنة الإطارات المجمّعة زمنيًا قبل/بعد التعويض | `visualize_boundaries_and_frames.py`, `visualize_cumulative_compare.py` |
+| 1. Segment | اكتشاف توقيت المسح وتقسيم التسجيلات إلى مرور أمامي/خلفي | `segment_robust_fixed.py` |
+| 2. Compensate | تقدير تشوّه زمني خطيّ-قطعي لإزالة الميل الزمني الناتج عن المسح | `compensate_multiwindow_train_saved_params.py` |
+| 3. Visualize | تراكب الحدود المتعلّمة ومقارنة الإطارات المجمّعة زمنيًا قبل/بعد التعويض | `visualize_boundaries_and_frames.py`, `visualize_cumulative_compare.py` |
 
-يتضمن المستودع أيضًا أصول العتاد، وكود واجهة جمع البيانات، وفروع تجارب مؤرشفة ضمن `versions/`.
+يتضمن المستودع أيضًا أصول العتاد، وكود واجهة جمع البيانات، وفروع تجارب مؤرشفة تحت `versions/`.
+
+### Scope and Assumptions
+
+- هذا المستودع موجّه للبحث ويتضمن سكربتات نشطة إضافةً إلى تجارب/نتائج مؤرشفة.
+- أوامر هذا README تفترض التنفيذ من جذر المستودع ما لم يُذكر خلاف ذلك.
+- بعض المسارات الاختيارية تعتمد على SDK خارجية (Metavision، وحزم SDK لموردي الكاميرات) وبيانات محلية غير مضمّنة في هذا المستودع.
+- إذا أشار أمر إلى مسار تاريخي غير موجود، ففضّل سكربتات الجذر المحدّثة المدرجة هنا، مع الإبقاء على الملاحظات القديمة للتوافق الخلفي.
 
 ## Features
 
-- سير عمل كامل لمعالجة الأحداث من RAW إلى الطيف.
-- كشف فترة المسح تلقائيًا/يدويًا مع التقسيم إلى أمامي وخلفي.
+- سير عمل متكامل لمعالجة الأحداث من RAW إلى طيف.
+- كشف فترة المسح تلقائيًا/يدويًا مع التقسيم إلى مرور أمامي وخلفي.
 - تعويض متعدد النوافذ مع أوضاع معاملات قابلة للتدريب أو ثابتة.
 - حفظ/تحميل المعاملات بصيغ `NPZ`, `JSON`, `CSV`.
 - سير دمج متعدد المسحات لتسريع تكرارات التدريب (`compensate_multiwindow_turbo.py`).
-- حزمة تصوّر للحدود، والإطارات المجمعة، والمنحنيات التراكمية، والتشخيصات الموزونة.
-- توثيق العتاد: BOM وPCB وقطع ثلاثية الأبعاد وملاحظات firmware.
-- أدوات اقتناء للأنظمة المتزامنة بين كاميرا الأحداث وكاميرا الإطارات.
+- مجموعة تصوّر للحدود والإطارات المجمّعة والمنحنيات التراكمية والتشخيصات الموزونة.
+- توثيق عتاد: BOM وPCB وقطع 3D وملاحظات firmware.
+- أدوات اقتناء لإعدادات كاميرا أحداث/إطارات متزامنة.
 
-| Category | Included capabilities |
+| الفئة | القدرات المتضمنة |
 |---|---|
-| Signal processing | التقسيم، كشف الفترة، تعويض التشوّه الزمني |
-| Optimization | معاملات قابلة للتدريب/ثابتة، ضوابط النعومة، تدريب مُجزّأ |
-| Outputs | تراكبات مرئية، مقارنات تراكمية، تشخيصات مع تعيين طيفي |
-| Platform assets | ملفات تصميم العتاد، ملاحظات firmware، أدوات GUI، أرشيفات تاريخية |
+| معالجة الإشارة | التقسيم، كشف الفترة، تعويض التشوّه الزمني |
+| التحسين | معاملات قابلة للتدريب/ثابتة، ضوابط النعومة، تدريب مجزّأ |
+| المخرجات | تراكبات مرئية، مقارنات تراكمية، تشخيصات مع تعيين للأطوال الموجية |
+| أصول المنصة | ملفات تصميم العتاد، ملاحظات firmware، أدوات GUI، أرشيفات تاريخية |
 
 ## Repository Map
 
-تُحفظ الأصول العتادية الأساسية بجانب الكود لسهولة الوصول السريع:
+تُحفَظ أصول العتاد الرئيسية بجانب الشيفرة لتسهيل الوصول السريع:
 
-| Area | Path |
+| المجال | المسار |
 |---|---|
-| أجزاء مطبوعة ثلاثية الأبعاد | [`3D/`](3D/) |
-| مخططات PCB | [`PCB/`](PCB/) |
-| Firmware المتحكم الدقيق | [`firmware/`](firmware/) |
-| واجهة الاقتناء (سطح المكتب) | [`ImagingGUI/`](ImagingGUI/) |
-| مراجع التجارب/البيانات | [`reference_spectrum_2835/`](reference_spectrum_2835/), [`reference_spectrum_lumileds/`](reference_spectrum_lumileds/), [`references/`](references/) |
-| تحليل المحاذاة | [`align_background_vs_reference_code/`](align_background_vs_reference_code/), [`align_data_vs_filter_code/`](align_data_vs_filter_code/) |
+| أجزاء مطبوعة ثلاثيًا | [`3D/`](../3D/) |
+| مخططات PCB | [`PCB/`](../PCB/) |
+| firmware المتحكم الدقيق | [`firmware/`](../firmware/) |
+| واجهة جمع البيانات (سطح المكتب) | [`ImagingGUI/`](../ImagingGUI/) |
+| مراجع تجريبية/بيانات | [`comparisons/reference_spectrum_2835/`](../comparisons/reference_spectrum_2835/), [`comparisons/reference_spectrum_lumileds/`](../comparisons/reference_spectrum_lumileds/), [`references/`](../references/) |
+| تحليل المحاذاة | [`comparisons/align_background_vs_reference_code/`](../comparisons/align_background_vs_reference_code/), [`comparisons/alignment_configs/`](../comparisons/alignment_configs/) |
 
 ## Project Structure
 
@@ -150,14 +198,14 @@ OpenHI/
 ├── scan_compensation_gui_cloud.py
 ├── show_envi_spectrum_gui.py
 ├── simple_raw_reader.py
-├── align_background_vs_reference_code/
+├── comparisons/align_background_vs_reference_code/
 ├── align_data_vs_filter_code/
-├── alignment_configs/
-├── archive_code_variants/
-├── outputs_root/
-├── reference_filters/
-├── reference_spectrum_2835/
-├── reference_spectrum_lumileds/
+├── comparisons/alignment_configs/
+├── versions/05_archive_code_variants/
+├── comparisons/outputs_root/
+├── comparisons/reference_filters/
+├── comparisons/reference_spectrum_2835/
+├── comparisons/reference_spectrum_lumileds/
 ├── references/
 ├── i18n/
 └── versions/
@@ -165,7 +213,7 @@ OpenHI/
 
 ## Quick Start (5-Min Path)
 
-إذا كانت البيئة جاهزة بالفعل وكان مجلد بياناتك يحتوي ملف `*event*.raw`:
+إذا كانت بيئتك مجهزة مسبقًا وكان مجلد البيانات يحتوي على ملف `*event*.raw`:
 
 ```bash
 scripts/run_scan_pipeline.sh /path/to/dataset_dir
@@ -177,23 +225,24 @@ scripts/run_scan_pipeline.sh /path/to/dataset_dir
 scripts/run_scan_pipeline.sh /path/to/dataset_dir /path/to/recording_event.raw
 ```
 
-يشغّل هذا المغلّف التقسيم، وتدريب التعويض، والتصوّر باستخدام مسارات السكربتات وخيارات CLI الافتراضية في المستودع.
+يشغّل هذا الغلاف التقسيم، وتدريب التعويض، والتصوّر باستخدام مسارات السكربتات الافتراضية في المستودع وخيارات CLI الافتراضية.
 
 > [!TIP]
-> للتحقق الأولي، شغّل المغلّف على مجلد بيانات واحد ثم افحص ملف segment NPZ والمخرجات المرئية الناتجة قبل ضبط متغيرات `PIPELINE_*`.
+> للتحقق الأولي، شغّل الغلاف على مجلد بيانات واحد، ثم راجع ملف NPZ الناتج عن التقسيم ومخرجات التصوّر قبل ضبط متغيرات `PIPELINE_*`.
 
 ## Prerequisites
 
-- Python 3.9+ (وPython 3.10+ لبعض أدوات GUI ضمن `ImagingGUI/`).
-- حزم Python الأساسية: `numpy`, `torch`, `matplotlib`.
-- اختياري لكنه شائع: `opencv-python`, `pillow`, `cellpose`.
-- Metavision SDK / Python bindings لقراءة RAW المعتمدة على الأحداث (`simple_raw_reader.py` والتقسيم من RAW).
-- يُنصح بـ PyTorch مع CUDA لتسريع التحسين.
+- Python 3.9+ (و Python 3.10+ لبعض أدوات GUI داخل `ImagingGUI/`).
+- الحزم الأساسية: `numpy`, `torch`, `matplotlib`.
+- حزم اختيارية شائعة: `opencv-python`, `pillow`, `cellpose`, `spectral`.
+- حزمة اختيارية حسب المنصة: `pywin32` (عادةً لوِرش SDK الكاميرا على Windows).
+- Metavision SDK / Python bindings لمسارات قراءة RAW (`simple_raw_reader.py` والتقسيم من RAW).
+- يُنصح بـ PyTorch مدعوم CUDA لتسريع التحسين.
 - توفر تسجيلات RAW و/أو ملفات NPZ المقسّمة محليًا.
 
 ## Installation
 
-لا يوجد حاليًا ملف بيئة مقفل عند جذر المستودع. الإعداد المقترح:
+لا يوجد ملف بيئة مُقفل في جذر المستودع حاليًا. إعداد مقترح:
 
 ```bash
 # create and activate a virtual environment or conda env
@@ -206,12 +255,20 @@ pip install numpy matplotlib torch
 # optional tools often used in this repository
 pip install opencv-python pillow
 # pip install cellpose
+# pip install spectral pywin32
 ```
 
 إذا كنت تستخدم Git hooks لضبط الملفات الكبيرة:
 
 ```bash
 bash scripts/setup_hooks.sh
+```
+
+مستحسن (اختياري) لفحوصات قابلية إعادة الإنتاج:
+
+```bash
+python -c "import numpy, torch, matplotlib; print('core deps ok')"
+python -c "import torch; print('cuda:', torch.cuda.is_available())"
 ```
 
 ## Usage
@@ -242,40 +299,116 @@ python visualize_cumulative_compare.py \
   --sensor_width 1280 --sensor_height 720
 ```
 
+### Command-to-Output Reference
+
+| الخطوة | نقطة تشغيل الأمر | المخرج الأساسي |
+|---|---|---|
+| Segment scans | `segment_robust_fixed.py` | `*_segments/Scan_*_{Forward,Backward}_events.npz` |
+| Train compensation | `compensate_multiwindow_train_saved_params.py` | `*learned_params_n*.{npz,json,csv}` + تشخيصات مرئية |
+| Boundary/frame diagnostics | `visualize_boundaries_and_frames.py` | مجلد تصوّر مختوم بالطابع الزمني مع تراكبات وتجميعات |
+| Cumulative diagnostics | `visualize_cumulative_compare.py`, `visualize_cumulative_weighted.py` | مخططات تراكمية/إحصائية لفحص جودة المسح |
+| Full convenience run | `scripts/run_scan_pipeline.sh` | تقسيم + تدريب + تصوّر من طرف إلى طرف |
+
 ### One-command convenience wrapper
 
 ```bash
 scripts/run_scan_pipeline.sh /path/to/dataset_dir [raw_file]
 ```
 
+### Minimal Smoke Test (no training changes)
+
+استخدم هذا عندما تريد التحقق سريعًا من ترابط السكربتات على ملف segment NPZ موجود قبل تشغيل تحسين طويل:
+
+```bash
+# quick visualization pass
+python visualize_boundaries_and_frames.py /path/to/Scan_1_Forward_events.npz \
+  --sample_rate 0.05 --sensor_width 1280 --sensor_height 720
+
+# quick cumulative diagnostics
+python visualize_cumulative_compare.py /path/to/Scan_1_Forward_events.npz \
+  --sensor_width 1280 --sensor_height 720
+```
+
 متغيرات البيئة التي يدعمها `scripts/run_scan_pipeline.sh`:
 
-| Variable | Default | Purpose |
+| المتغير | الافتراضي | الغرض |
 |---|---:|---|
 | `PIPELINE_ACTIVITY_FRACTION` | `0.90` | نسبة نافذة الأحداث النشطة |
-| `PIPELINE_BIN_WIDTH` | `50000` | عرض حاوية التدريب بالميكروثانية |
+| `PIPELINE_BIN_WIDTH` | `50000` | عرض bin للتدريب بالميكروثانية |
 | `PIPELINE_SENSOR_WIDTH` | `1280` | عرض الحساس للتصوّر |
 | `PIPELINE_SENSOR_HEIGHT` | `720` | ارتفاع الحساس للتصوّر |
-| `PIPELINE_SAMPLE_RATE` | `0.10` | نسبة أخذ العينات من الأحداث للرسم |
-| `PIPELINE_TIME_BIN_US` | `1000` | حجم حاوية النشاط للتقسيم |
-| `PIPELINE_SEGMENT_PATTERN` | `Scan_1_Forward_events.npz` | نمط ملف المقطع للسكربتات اللاحقة |
+| `PIPELINE_SAMPLE_RATE` | `0.10` | نسبة أخذ عينات الأحداث للرسم |
+| `PIPELINE_TIME_BIN_US` | `1000` | حجم bin النشاط للتقسيم |
+| `PIPELINE_SEGMENT_PATTERN` | `Scan_1_Forward_events.npz` | نمط ملف segment للسكربتات اللاحقة |
+
+### Figure-oriented wrapper (publication workflow)
+
+```bash
+scripts/prepare_figure04.sh /path/to/dataset_dir [raw_file]
+```
+
+يشغّل هذا الغلاف التقسيم، والتشخيصات، والتعويض، والرسم بإعدادات مناسبة لمسار إعداد الأشكال العلمية.
+
+> [!NOTE]
+> في هذا الإصدار المحلي، يشير `scripts/prepare_figure04.sh` إلى `publication_code/figure02_scan_segmentation.py`، لكن مجلد `publication_code/` غير موجود. احتفظ بهذا المسار إذا كان فرعك المحلي يحتوي هذا المجلد؛ وإلا فالأفضل استخدام `scripts/run_scan_pipeline.sh`.
 
 ## Internationalization
 
-يستخدم المستودع سطرًا واحدًا لخيارات اللغة أعلى كل README لتجنّب تكرار شريط اللغات.
+يستخدم المستودع سطرًا واحدًا فقط لخيارات اللغة أعلى كل README لتجنّب تكرار شريط اللغات.
 
-ملفات الترجمة المتوفرة حاليًا داخل `i18n/`:
+الملفات المترجمة المتاحة حاليًا داخل `i18n/`:
 
 - `README.ar.md`
+- `README.de.md`
 - `README.es.md`
 - `README.fr.md`
 - `README.ja.md`
 - `README.ko.md`
+- `README.ru.md`
+- `README.vi.md`
+- `README.zh-Hans.md`
+- `README.zh-Hant.md`
 
-| Language link in nav | File in `i18n/` | Status |
+### Language Coverage Matrix
+
+| اللغة/المنطقة | الملف | التغطية |
 |---|---|---|
+| العربية | `README.ar.md` | ✅ موجود |
+| الألمانية | `README.de.md` | ✅ موجود |
+| الإسبانية | `README.es.md` | ✅ موجود |
+| الفرنسية | `README.fr.md` | ✅ موجود |
+| اليابانية | `README.ja.md` | ✅ موجود |
+| الكورية | `README.ko.md` | ✅ موجود |
+| الروسية | `README.ru.md` | ✅ موجود |
+| الفيتنامية | `README.vi.md` | ✅ موجود |
+| الصينية (المبسطة) | `README.zh-Hans.md` | ✅ موجود |
+| الصينية (التقليدية) | `README.zh-Hant.md` | ✅ موجود |
 
-تم الإبقاء عمدًا على روابط اللغات المخطط لها في شريط التنقل العلوي للتوافق المستقبلي.
+| رابط اللغة في الشريط | الملف في `i18n/` | الحالة |
+|---|---|---|
+| العربية | `README.ar.md` | متوفر |
+| Deutsch | `README.de.md` | متوفر |
+| Español | `README.es.md` | متوفر |
+| Français | `README.fr.md` | متوفر |
+| 日本語 | `README.ja.md` | متوفر |
+| 한국어 | `README.ko.md` | متوفر |
+| Русский | `README.ru.md` | متوفر |
+| Tiếng Việt | `README.vi.md` | متوفر |
+| 中文 (简体) | `README.zh-Hans.md` | متوفر |
+| 中文（繁體） | `README.zh-Hant.md` | متوفر |
+
+يجب أن تحافظ جميع نسخ README على سطر واحد فقط لخيارات اللغة في الأعلى (من دون شريط لغات مكرر)، بما يتوافق مع `.auto-readme-work/*/language-nav-*.md`.
+
+> [!NOTE]
+> قاعدة صيانة التعدد اللغوي للتعديلات القادمة: بعد أي تعديل في أقسام الملف الجذر، حدّث كل ملف لغة واحدًا تلو الآخر، واحرص على عدم تكرار شريط اللغات في أي README محلي.
+
+### Multilingual Update Checklist
+
+1. حدّث ملف الجذر `README.md` أولًا.
+2. تأكد من وجود `i18n/` وملفات اللغات المطلوبة.
+3. حدّث كل ملف `i18n/README.<lang>.md` واحدًا تلو الآخر (من دون نسخ مجمّع لمحتوى قديم).
+4. حافظ على سطر واحد فقط لخيارات اللغة في أعلى كل نسخة README.
+5. تحقّق من عدم وجود أشرطة لغات مكررة في الجذر أو الملفات المحلية.
 
 ## Configuration
 
@@ -283,24 +416,24 @@ scripts/run_scan_pipeline.sh /path/to/dataset_dir [raw_file]
 
 ### Segmentation (`segment_robust_fixed.py`)
 
-- `--time_bin_us`: حجم حاوية النشاط بالميكروثانية.
-- `--round_trip_period`: فترة يدوية (الافتراضي `1688` حاوية).
-- `--auto_calculate_period`: تقدير الفترة عبر الارتباط الذاتي.
+- `--time_bin_us`: حجم bin النشاط بالميكروثانية.
+- `--round_trip_period`: فترة يدوية (الافتراضي `1688` bins).
+- `--auto_calculate_period`: حساب الفترة عبر autocorrelation.
 - `--activity_fraction`: نسبة نافذة الأحداث النشطة.
 - `--manual_start_shift_ms`: إزاحة يدوية لبداية المسح.
 
 ### Compensation (`compensate_multiwindow_train_saved_params.py`)
 
-- `--num_params` (الافتراضي `13`), `--temperature` (الافتراضي `5000`).
+- `--num_params` (الافتراضي `13`)، `--temperature` (الافتراضي `5000`).
 - `--a_trainable` / `--a_fixed`, `--b_trainable` / `--b_fixed`, `--boundary_trainable`.
 - `--a_default`, `--b_default`.
 - `--iterations`, `--learning_rate`, `--smoothness_weight`.
 - `--chunk_size` للتحكم بالذاكرة.
-- `--load_params` لإعادة استخدام المعاملات المتعلَّمة.
+- `--load_params` لإعادة استخدام معاملات متعلّمة.
 
 ### Visualization
 
-- `visualize_boundaries_and_frames.py`: `--sample_rate`, `--wavelength_min`, `--wavelength_max`, ومعاملات حجم الحساس.
+- `visualize_boundaries_and_frames.py`: `--sample_rate`, `--wavelength_min`, `--wavelength_max`, وخيارات حجم الحساس.
 - `visualize_cumulative_compare.py`: حجم الحساس، `--output_dir`, `--sample_label`.
 - `visualize_cumulative_weighted.py`: مقاييس القطبية، `--step_us`, `--auto_scale`, `--exp`, `--no_comp`.
 
@@ -340,7 +473,7 @@ python scanning_alignment_visualization_cumulative_compare.py \
   --sample_label "led_12v_no_acc_glass Scan_1_Forward"
 ```
 
-هذه الأوامر القديمة محفوظة عمدًا كسياق توافق؛ في هذا الإصدار استخدم سكربتات الجذر الحالية متى أمكن.
+تم الإبقاء على هذه الأوامر القديمة عمدًا لتوفير سياق التوافق؛ في هذا الإصدار المحلي استخدم سكربتات الجذر الحالية كلما أمكن.
 
 ### Turbo multi-scan training
 
@@ -361,7 +494,7 @@ python compensate_multiwindow_train_saved_params.py segment.npz \
 
 ## Bill of Materials (Core Module)
 
-راجع [`BOM/core_module.md`](BOM/core_module.md) للاطلاع على الجدول الكامل مع الروابط والملاحظات.
+راجع [`BOM/core_module.md`](../BOM/core_module.md) للاطلاع على الجدول الكامل مع الروابط والملاحظات.
 
 ### Table S2. Acquisition Time and Cost Comparison Between the Proposed Event-Driven System and a Reference Hyperspectral Camera
 
@@ -372,7 +505,7 @@ python compensate_multiwindow_train_saved_params.py segment.npz \
 | Approx. price | ∼3000 USD | 14 000 USD |
 
 ### Table S3. Bill of Materials for the Core Scanning Illumination Module
-(باستثناء كاميرا الأحداث وبصريات التحقق 4f الاختيارية)
+(Excluding event camera and optional 4f validation optics)
 
 | Component | Notes | Cost (USD) | Taobao Link |
 |---|---|---:|---|
@@ -390,23 +523,23 @@ python compensate_multiwindow_train_saved_params.py segment.npz \
 
 ### 1. Segmentation: `segment_robust_fixed.py`
 
-**الهدف**: استخراج توقيت المسح من أحداث RAW وتقطيعها إلى 6 مسحات أحادية الاتجاه (F, B, F, B, F, B).
+**الهدف**: استخراج توقيت المسح من الأحداث الخام وتقطيعها إلى 6 مسحات أحادية الاتجاه (F, B, F, B, F, B).
 
 **الوصف الرياضي**:
 
-- **إشارة النشاط** (تجميع الأحداث بحاويات زمنية $\Delta t = 1000~\mu\text{s}$):
+- **إشارة النشاط** (تجميع الأحداث ضمن bins بحجم $\Delta t = 1000~\mu\text{s}$):
   $$a[n] = \left|\{ i \mid t_{\min} + n\Delta t \le t_i < t_{\min} + (n+1)\Delta t \}\right|.$$
 
-- **كشف النافذة النشطة**: إيجاد أصغر نافذة متجاورة تحتوي على $80\%$ من الأحداث.
+- **اكتشاف النافذة النشطة**: إيجاد أصغر نافذة متصلة تحتوي على $80\%$ من الأحداث.
 
-- **تقدير الفترة**: ارتباط ذاتي أو فترة يدوية (الافتراضي: $1688$ حاوية).
+- **تقدير الفترة**: autocorrelation أو فترة يدوية (الافتراضي: $1688$ bins).
 
 - **الارتباط العكسي** (بنية التوقيت):
   $$R[k] = \sum_{n} a[n]\, a_{\text{rev}}[n+k]$$
   حيث
   $$a_{\text{rev}}[n] = a[N-1-n].$$
 
-**Usage**:
+**الاستخدام**:
 
 ```bash
 # Automatic period detection
@@ -416,35 +549,35 @@ python segment_robust_fixed.py recording.raw --segment_events --output_dir segme
 python segment_robust_fixed.py recording.raw --segment_events --round_trip_period 1688
 ```
 
-**Arguments**:
+**المعاملات**:
 
 - `--segment_events`: حفظ مقاطع المسح الفردية كملفات NPZ.
-- `--round_trip_period 1688`: استخدام فترة يدوية (الافتراضي).
-- `--auto_calculate_period`: تجاوز الفترة اليدوية بالارتباط الذاتي.
-- `--activity_fraction 0.80`: نسبة الأحداث للمنطقة النشطة.
+- `--round_trip_period 1688`: استخدام فترة يدوية (افتراضي).
+- `--auto_calculate_period`: تجاوز الفترة اليدوية بحساب autocorrelation.
+- `--activity_fraction 0.80`: نسبة الأحداث لمنطقة النشاط.
 - `--max_iterations 2`: عدد تكرارات التحسين.
 
 ### 2. Compensation: `compensate_multiwindow_train_saved_params.py`
 
-**الهدف**: تعلّم معاملات تشوّه زمني لإزالة القص الزمني الناتج عن المسح باستخدام تعويض خطي-قطعي متعدد النوافذ.
+**الهدف**: تعلّم معاملات التشوّه الزمني لإزالة القص الزمني الناتج عن المسح عبر تعويض خطي-قطعي متعدد النوافذ.
 
 **الوصف الرياضي**:
 
-- **سطوح الحدود**:
+- **أسطح الحدود**:
   $$T_i(x, y) = a_i x + b_i y + c_i,\quad i=0,\ldots,M-1.$$
 
-- **انتماءات النوافذ الناعمة**:
+- **انتماءات نوافذ ناعمة**:
   $$m_i = \sigma\!\Big(\frac{t - T_i}{\tau}\Big)\,\sigma\!\Big(\frac{T_{i+1} - t}{\tau}\Big),\qquad w_i = \frac{m_i}{\sum_j m_j + \varepsilon}.$$
 
 - **ميول مستوفاة (اختياري)**:
   $$\alpha_i = \frac{t - T_i}{T_{i+1} - T_i},\quad a_i' = (1-\alpha_i)a_i + \alpha_i a_{i+1},\quad b_i' = (1-\alpha_i)b_i + \alpha_i b_{i+1}.$$
 
-- **التشويه الزمني**:
+- **التشوّه الزمني**:
   $$\Delta t(x,y,t) = \sum_i w_i (\tilde{a}_i x + \tilde{b}_i y),\qquad t' = t - \Delta t(x,y,t).$$
 
-- **دالة الخسارة**: تصغير التباين للإطارات المجمعة زمنيًا مع انتظام نعومة على المعاملات.
+- **دالة الخسارة**: تقليل تباين الإطارات المجمعة زمنيًا مع تنظيم نعومة على المعاملات.
 
-**Usage**:
+**الاستخدام**:
 
 ```bash
 # Train with a-parameters trainable, b fixed
@@ -457,28 +590,28 @@ python compensate_multiwindow_train_saved_params.py segment.npz \
   --load_params learned_params.npz
 ```
 
-**Key Arguments**:
+**أهم المعاملات**:
 
-- `--a_trainable` / `--a_fixed`: التحكم في تدريب معاملات a (الافتراضي: ثابتة).
-- `--b_trainable` / `--b_fixed`: التحكم في تدريب معاملات b (الافتراضي: قابلة للتدريب).
+- `--a_trainable` / `--a_fixed`: التحكم في تدريب a (الافتراضي: ثابت).
+- `--b_trainable` / `--b_fixed`: التحكم في تدريب b (الافتراضي: قابل للتدريب).
 - `--num_params 13`: عدد معاملات الحدود.
-- `--temperature 5000`: حرارة sigmoid للنوافذ الناعمة.
-- `--smoothness_weight 0.001`: وزن الانتظام.
+- `--temperature 5000`: درجة حرارة sigmoid للنوافذ الناعمة.
+- `--smoothness_weight 0.001`: وزن التنظيم.
 - `--load_params file.npz`: تحميل معاملات محفوظة.
-- `--chunk_size 250000`: حجم دفعة معالجة فعّال للذاكرة.
+- `--chunk_size 250000`: حجم تجزئة لمعالجة موفرة للذاكرة.
 
 ### 3. Visualization: `visualize_boundaries_and_frames.py`
 
-**الهدف**: عرض المعاملات المتعلَّمة وإبراز التحسينات النوعية.
+**الهدف**: عرض المعاملات المتعلّمة وإظهار التحسن النوعي.
 
-**Features**:
+**الميزات**:
 
-- تراكب المعاملات على إسقاطات $x\text{–}t$ و$y\text{–}t$.
-- مقارنة الإطارات المجمعة زمنيًا (الأصلية مقابل المعوَّضة).
-- تحليل نافذة منزلقة (حاويات 50 ms و2 ms).
+- تراكب المعاملات على إسقاطات $x\text{–}t$ و $y\text{–}t$.
+- مقارنة الإطارات المجمعة زمنيًا (أصلي مقابل مُعوَّض).
+- تحليل نافذة منزلقة (50 ms و 2 ms bins).
 - تعيين أطوال موجية للتصوّر الطيفي.
 
-**Usage**:
+**الاستخدام**:
 
 ```bash
 python visualize_boundaries_and_frames.py segment.npz \
@@ -487,7 +620,7 @@ python visualize_boundaries_and_frames.py segment.npz \
 
 ### 4. Cumulative Comparison: `visualize_cumulative_compare.py`
 
-**الهدف**: مقارنة المتوسطات التراكمية بخطوة 2 ms مع متوسطات الحاويات المنزلقة.
+**الهدف**: مقارنة المتوسطات التراكمية بخطوة 2 ms مع متوسطات النوافذ المنزلقة.
 
 **الوصف الرياضي**:
 
@@ -496,10 +629,10 @@ python visualize_boundaries_and_frames.py segment.npz \
 
 - **المتوسطات المنزلقة**: عدد الأحداث في $[T-\Delta,\,T)$ مقسومًا على $H \times W$.
 
-- **العلاقة** (مشتقة بالفروق المحدودة):
+- **العلاقة** (مشتقة فروق منتهية):
   $$\Delta F(T) \approx \frac{F(T) - F(T-\Delta)}{\Delta}.$$
 
-**Usage**:
+**الاستخدام**:
 
 ```bash
 python visualize_cumulative_compare.py segment.npz \
@@ -513,14 +646,14 @@ python visualize_cumulative_compare.py segment.npz \
 
 واجهة GUI كاملة لتعويض المسح مع تصوّر طيفي ثلاثي الأبعاد.
 
-**Features**:
+**الميزات**:
 
 - ضبط تفاعلي للمعاملات.
-- تقدم التحسين في الزمن الحقيقي.
-- تصوّر ثلاثي الأبعاد مع تعيين الطول الموجي.
+- متابعة تقدم التحسين في الزمن الحقيقي.
+- تصوّر ثلاثي الأبعاد مع تعيين الأطوال الموجية.
 - تصدير النتائج والمعاملات.
 
-**Usage**:
+**الاستخدام**:
 
 ```bash
 python scan_compensation_gui_cloud.py
@@ -532,43 +665,62 @@ python scan_compensation_gui_cloud.py
 
 - `ImagingGUI/DualCamera_separate_transform.py`
 
-**Features**:
+**الميزات**:
 
 - تسجيل متزامن للأحداث والإطارات.
-- معاينة فورية مع تحويلات.
-- أدوات نوافذ دائمة الظهور.
+- معاينة فورية مع التحويلات.
+- عناصر تحكم نافذة always-on-top.
 - ضبط المعاملات أثناء التسجيل.
+
+### Hyperspectral ENVI utilities
+
+سكربتات داخل المستودع لعرض ENVI cube، واستخراج ROI، وتجهيزات التصوّر:
+
+- `show_envi_spectrum_gui.py`
+- `scripts/hs_to_rgb.py`
+- `scripts/envi_export_frames.py`
+- `scripts/envi_crop_by_roi.py`
+- `scripts/hs_gradient_wavelength.py`
+- `scripts/cellpose_roi.py`
+- `scripts/cellpose_simple_mask.py`
+- `scripts/roi_template_match.py`
+
+نقطة تشغيل نموذجية:
+
+```bash
+python show_envi_spectrum_gui.py
+```
 
 ### Arduino Motor Control (legacy path reference retained)
 
-أشار README الأصلي إلى مسار firmware sketch التالي:
+كان README الأصلي يشير إلى مسار firmware التالي:
 
 - `rotor/step42_with_key_int/step42_with_key_int.ino`
 
-تخطيط المستودع الحالي يتضمن ملاحظات firmware هنا:
+التخطيط الحالي للمستودع يتضمن ملاحظات firmware هنا:
 
 - `firmware/README.md`
 
-عدم تطابق المسارات هذا محفوظ عمدًا؛ إذا كانت مجلدات rotor sketch لديك في فرع آخر أو نسخة محلية أخرى، فاستمر باستخدام تلك المسارات.
+هذا الاختلاف في المسارات محفوظ عمدًا؛ إذا كانت مجلدات rotor sketch لديك في فرع/نسخة محلية أخرى، فاستمر باستخدام تلك المسارات.
 
-القدرات الموثقة تاريخيًا لهذا sketch تشمل:
+قدرات sketch الموثقة تاريخيًا (والمحفوظة هنا للتوافق):
 
 - تحكم دقيق بالزاوية مع microstepping.
 - ملفات تسارع/تباطؤ.
 - تكامل limit switch.
-- وظيفة التمركز التلقائي.
+- وظيفة تمركز تلقائي.
 
 ## Turbo Multi-Scan Compensation
 
-عند توفر مسحات أحادية الاتجاه متعددة (Forward/Backward) لنفس sweep، يمكنك دمجها وتشغيل المدرب المُجرّب على تيار أحداث مدمج واحد باستخدام `compensate_multiwindow_turbo.py`.
+عند توفر عدة مسحات أحادية الاتجاه (Forward/Backward) للمسح نفسه، يمكنك دمجها وتشغيل المدرب المُثبت على تيار أحداث مدمج واحد باستخدام `compensate_multiwindow_turbo.py`.
 
 ### What it does
 
-- يقبل مقطعًا واحدًا، أو قائمة صريحة، أو مجلد مقاطع كامل.
-- لمسحات Backward، يقلب القطبية ويعكس الزمن قبل الدمج:
-- إذا كانت القطبية `p ∈ {0,1}`: `p := 1 − p`; ثم اعكس الزمن داخل المسح.
-- إذا كانت القطبية `p ∈ {−1,1}`: `p := −p`; ثم اعكس الزمن داخل المسح.
-- يضم المسحات على خط زمني مستمر (بفاصل `1 μs` بين المسحات) ويستدعي `compensate_multiwindow_train_saved_params.py` داخليًا.
+- يقبل segment واحدًا، أو قائمة صريحة، أو مجلد segments كامل.
+- في المسحات Backward، يقلب القطبية ويعكس الزمن قبل الدمج:
+- إذا كانت القطبية `p ∈ {0,1}`: تصبح `p := 1 − p`، ثم يُعكس الزمن داخل المسح.
+- إذا كانت القطبية `p ∈ {−1,1}`: تصبح `p := −p`، ثم يُعكس الزمن داخل المسح.
+- يضمّ المسحات على خط زمني مستمر (بفاصل `1 μs` بين المسحات) ويستدعي `compensate_multiwindow_train_saved_params.py` داخليًا.
 
 ### Usage
 
@@ -599,24 +751,24 @@ python compensate_multiwindow_turbo.py \
 ### Options
 
 - `--segment`, `--segments`, `--segments-dir`: اختيار مجموعة الإدخال.
-- `--include {all|forward|backward}`: التصفية حسب اتجاه المسح.
-- `--sort {name|time}`: ترتيب طبيعي للأسماء أو ترتيب `start_time` من NPZ.
+- `--include {all|forward|backward}`: تصفية حسب اتجاه المسح.
+- `--sort {name|time}`: ترتيب طبيعي بالأسماء أو وفق `start_time` داخل NPZ.
 - `--bin-width <μs>`: يُمرَّر إلى المدرب الأساسي.
-- `--load-params`: إعادة استخدام معاملات محفوظة (تجاوز التدريب وإعادة إنتاج المخرجات سريعًا عند عروض حاويات جديدة).
-- `--extra ...` بعد `--`: أي رايات إضافية تُمرَّر إلى المدرب الأساسي.
+- `--load-params`: إعادة استخدام معاملات محفوظة (تخطي التدريب وإعادة توليد المخرجات سريعًا بعروض bin جديدة).
+- `--extra ...` بعد `--`: أي خيارات إضافية تُمرَّر إلى المدرب الأساسي.
 
 ### Speed scaling tip
 
-إذا كان المسح أسرع بمقدار `N×` من الأساس، خفّض `--bin-width` بالنسبة نفسها (مثلًا الأساس `50 ms` -> أسرع `10×` -> `5 ms`: `--bin-width 5000`). يمكنك التدريب مرة واحدة (مثلًا `5 ms`) ثم استخدام `--load-params` لإعادة توليد النتائج بسرعة عند `10 ms` دون إعادة تدريب.
+إذا كانت المسحة أسرع بمقدار `N×` من خط الأساس، فخفّض `--bin-width` بنفس النسبة (مثلًا: خط أساس `50 ms` -> أسرع `10×` -> `5 ms`: استخدم `--bin-width 5000`). يمكنك التدريب مرة واحدة (مثلًا عند `5 ms`)، ثم استخدام `--load-params` لإعادة توليد النتائج بسرعة عند `10 ms` دون إعادة تدريب.
 
 ## Parameter Management
 
-يدعم النظام وظائف شاملة لحفظ/تحميل المعاملات.
+يدعم النظام آلية شاملة لحفظ/تحميل المعاملات.
 
 ### Save Formats
 
 - **NPZ**: صيغة ثنائية للتحميل السريع.
-- **JSON**: صيغة مقروءة للبشر مع بيانات وصفية.
+- **JSON**: صيغة مقروءة مع metadata.
 - **CSV**: متوافقة مع Excel للفحص اليدوي.
 
 ### Parameter Loading
@@ -631,18 +783,18 @@ python compensate_multiwindow_train_saved_params.py segment.npz \
 
 ### Parameter Files
 
-تُسمّى الملفات تلقائيًا بعدد المعاملات، مثل: `*_learned_params_n13.*`.
+تُسمى الملفات تلقائيًا وفق عدد المعاملات، مثل: `*_learned_params_n13.*`.
 
 ## Memory Optimization
 
-يستخدم النظام المعالجة المُجزأة (chunked processing) عبر المسار كاملًا:
+يستخدم النظام معالجة مجزأة في جميع المراحل:
 
-| Item | Detail |
+| العنصر | التفاصيل |
 |---|---|
-| Chunk Size | الافتراضي `250000` حدث (قابل للتعديل) |
-| Memory Efficient | يعالج مجموعات بيانات كبيرة دون فيضان ذاكرة GPU |
-| Unified Variance | يحافظ على تدفق تدرج صحيح أثناء التعلم |
-| Progress Tracking | تحديثات معالجة لحظية |
+| Chunk Size | الافتراضي `250000` حدث (قابل للضبط) |
+| Memory Efficient | معالجة مجموعات بيانات كبيرة دون تجاوز ذاكرة GPU |
+| Unified Variance | الحفاظ على تدفق gradients صحيح أثناء التعلم |
+| Progress Tracking | تحديثات معالجة في الزمن الحقيقي |
 
 ## Output Structure
 
@@ -663,6 +815,15 @@ project/
 │       ├── frame_means_wavelength.png
 │       └── time_binned_frames/         # Individual frames
 ```
+
+### Typical Generated Artifacts
+
+| نمط الملف | يُنتج بواسطة | الأهمية |
+|---|---|---|
+| `*_segments/Scan_*_events.npz` | التقسيم | مدخلات تدريب/تصوّر معيارية لكل مسح |
+| `*learned_params_n13.npz` (وكذلك `.json`, `.csv`) | مدرب التعويض | إعادة الاستخدام، قابلية إعادة الإنتاج، والفحص |
+| `visualization_YYYYmmdd_HHMMSS/` | سكربتات التصوّر / وضع التصوّر في المدرب | عزل مخرجات كل تشغيل بالطابع الزمني |
+| `events_with_params.png` ومخططات الإطارات/التراكمي | سكربتات التصوّر | تحقق نوعي من تأثيرات التعويض |
 
 ## Configuration Examples
 
@@ -692,127 +853,147 @@ python compensate_multiwindow_train_saved_params.py segment.npz \
 
 ## Wavelength Mapping
 
-يدعم النظام التصوّر الطيفي عبر تعيين التطور الزمني إلى الطول الموجي:
+يدعم النظام التصوّر الطيفي عبر ربط التطور الزمني بالطول الموجي:
 
 ```python
 # Linear mapping: time -> wavelength
 wavelength = wavelength_min + (t_normalized / t_max) * (wavelength_max - wavelength_min)
 ```
 
-**النطاق الافتراضي**: $380\text{–}680~\text{nm}$ (قابل للتعديل).
+**المدى الافتراضي**: $380\text{–}680~\text{nm}$ (قابل للضبط).
 
 ## Tips and Best Practices
 
 ### Parameter Selection
 
-- **Microstepping**: استخدم `32×` لحركة أكثر سلاسة (Arduino).
+- **Microstepping**: استخدم `32×` لحركة سلسة (Arduino).
 - **Bin Width**: ابدأ بـ `50 ms` للتحسين، و`2 ms` للتحليل.
-- **Temperature**: قيم أعلى (حوالي `5000`) لحدود أنعم.
-- **Smoothness**: `0.001` يوفّر انتظامًا جيدًا.
+- **Temperature**: القيم الأعلى (حوالي `5000`) لحدود أكثر نعومة.
+- **Smoothness**: القيمة `0.001` تمنح تنظيمًا جيدًا.
 
 ### Memory Management
 
-- **GPU Memory**: استخدم المعالجة المُجزأة مع حجم chunk مناسب.
-- **Event Count**: يُنصح بأكثر من `10^6` حدث لتعلم مستقر.
-- **Iterations**: عادةً تكفي `1000` تكرار.
+- **GPU Memory**: استخدم المعالجة المجزأة بحجم chunk مناسب.
+- **Event Count**: يوصى بـ `> 10^6` حدث للتعلم المستقر.
+- **Iterations**: غالبًا ما تكون `1000` تكرار كافية.
 
 ### File Organization
 
-- احتفظ بملفات RAW والمقاطع في الدليل نفسه.
-- ملفات المعاملات تُكتشف تلقائيًا عبر نمط التسمية.
-- استخدم بادئات أسماء ملفات وصفية لتنظيم المخرجات.
+- أبقِ ملفات RAW وsegments في الدليل نفسه.
+- تُكتشف ملفات المعاملات تلقائيًا وفق نمط التسمية.
+- استخدم بادئات أسماء واضحة لتنظيم المخرجات.
 
 ## Development Notes
 
-- يصف `versions.md` المراحل التاريخية للمشروع وأسباب الهجرة بين الإصدارات.
-- يمنع `.githooks/pre-commit` الالتزامات كبيرة الحجم/الثنائية وأنواع الملفات غير البرمجية/غير التوثيقية.
-- يقوم `scripts/setup_hooks.sh` بضبط `core.hooksPath` إلى `.githooks`.
-- يحتوي `archive_code_variants/` على نسخ سكربتات أقدم لإبقاء أدوات الجذر مركّزة.
+- يصف `versions.md` المراحل التاريخية للمشروع وأسباب الانتقال بينها.
+- يمنع `.githooks/pre-commit` عمليات commit كبيرة/ثنائية وأنواع ملفات غير كود/توثيق.
+- يضبط `scripts/setup_hooks.sh` قيمة `core.hooksPath` إلى `.githooks`.
+- يحتوي `versions/05_archive_code_variants/` على نسخ سكربتات أقدم للحفاظ على تركيز أدوات الجذر الحالية.
 
-انحرافات توثيق معروفة (محفوظة عمدًا لسياق التوافق العكسي):
+### Developer Workflow Notes
 
-- بعض الوثائق القديمة تذكر `sync_image_system/` أو `dual_camera_gui.py`; الإصدار الحالي يحتوي `ImagingGUI/DualCamera_separate_transform.py` وأدلة SDK.
-- `ImagingGUI/README.md` لا يزال يشير إلى `pip install -r requirements.txt`، لكن لا يوجد `requirements.txt` في جذر هذا الإصدار.
-- يشير `firmware/README.md` إلى عدة مجلدات Arduino sketch غير موجودة في هذا الإصدار.
-- يذكر `versions.md` أسماء سكربتات قديمة تختلف عن أسماء سكربتات الجذر الحالية.
-- `i18n/` موجود ويحتوي حاليًا `README.ar.md`, `README.es.md`, `README.fr.md`, `README.ja.md`, `README.ko.md`; وروابط اللغات الإضافية محفوظة كأهداف مخططة.
+- فضّل `scripts/run_scan_pipeline.sh` لتشغيلات baseline القابلة لإعادة الإنتاج، ثم انتقل لضبط السكربتات بشكل منفصل.
+- اعتبر المسارات تحت `comparisons/` مثل `outputs_root/`, `reference_*`, و`align_*` مساحات مختلطة للتحليل/التاريخ؛ لا تفترض أنها عينات اختبار دنيا فقط.
+- عند إضافة سكربتات جديدة، احرص أن تبقى نقاط الدخول في الجذر واضحة من هذا README مع ربط المستندات ذات الصلة (`QUICKSTART.md` وREADME الخاصة بالمجلدات الفرعية).
+
+انحرافات توثيق معروفة (محفوظة عمدًا للتوافق الخلفي):
+
+- تشير بعض الوثائق القديمة إلى `sync_image_system/` أو `dual_camera_gui.py`؛ بينما هذا الإصدار يحتوي `ImagingGUI/DualCamera_separate_transform.py` وأدلة SDK.
+- لا يزال `ImagingGUI/README.md` يشير إلى `pip install -r requirements.txt`، لكن لا يوجد `requirements.txt` في الجذر بهذا الإصدار.
+- يشير `firmware/README.md` إلى مجلدات Arduino sketch فرعية غير موجودة في هذا الإصدار.
+- يذكر `versions.md` أسماء سكربتات قديمة تختلف عن أسماء السكربتات الحالية في الجذر.
+- يتضمن `i18n/` حاليًا كل الملفات المرتبطة في شريط اللغات (`ar`, `de`, `es`, `fr`, `ja`, `ko`, `ru`, `vi`, `zh-Hans`, `zh-Hant`)؛ حافظ على تزامن ملفات الجذر والترجمة عند تعديل العناوين/الأقسام.
 
 ## Troubleshooting
 
-| Symptom | Likely cause | Action |
+| العَرَض | السبب المحتمل | الإجراء |
 |---|---|---|
-| Parameter loading errors | Parameter count mismatch | Ensure `--num_params` matches the saved file |
-| OOM / memory pressure | Chunk too large or bins too fine | Reduce `--chunk_size` and/or increase `--bin_width` |
-| Weak compensation quality | Under-trained or poor segmentation | Increase `--iterations`, enable trainable params, verify segmentation |
-| No segment files produced | RAW/SDK/flag issue | Confirm RAW path, Metavision setup, and `--segment_events` |
-| Turbo wrapper args ignored | Incorrect forwarding syntax | Pass trainer args after `--` (or use `--extra`) |
-| GUI issues | Tkinter/backend or SDK mismatch | Verify GUI backend and camera SDK availability |
+| أخطاء تحميل المعاملات | عدم تطابق عدد المعاملات | تأكد أن `--num_params` يطابق الملف المحفوظ |
+| OOM / ضغط ذاكرة | chunk كبير جدًا أو bins دقيقة جدًا | قلّل `--chunk_size` و/أو زد `--bin_width` |
+| جودة تعويض ضعيفة | تدريب غير كافٍ أو تقسيم ضعيف | زد `--iterations`، فعّل معاملات قابلة للتدريب، وتحقق من جودة التقسيم |
+| عدم إنتاج ملفات segment | مشكلة في RAW/SDK/flags | تحقق من مسار RAW وإعداد Metavision ووجود `--segment_events` |
+| تجاهل معاملات turbo wrapper | صياغة تمرير خاطئة | مرّر معاملات المدرب بعد `--` (أو استخدم `--extra`) |
+| مشاكل GUI | عدم توافق Tkinter/backend أو SDK | تحقق من backend للواجهة وتوفر SDK الكاميرا |
 
-- **أخطاء تحميل المعاملات**: تأكد أن `--num_params` متوافق مع ملف المعاملات المحمّل.
-- **OOM / ضغط ذاكرة**: خفّض `--chunk_size` و/أو زد `--bin_width`.
-- **ضعف جودة التعويض**: زد `--iterations`، وفعّل المعاملات القابلة للتدريب (`--a_trainable`, `--b_trainable`, واختياريًا `--boundary_trainable`) وتحقق من جودة التقسيم.
-- **عدم إنتاج ملفات المقاطع**: تأكد من مسار RAW، وتوفّر Metavision، وتمرير `--segment_events`.
-- **تجاهل وسائط Turbo wrapper**: مرّر وسائط المدرب بعد `--` (أو استخدم `--extra`).
-- **مشكلات GUI**: تحقق من دعم Tkinter/backend وتوفّر SDK الكاميرا على منصتك.
+قائمة فحص موسعة للأعطال (محفوظة للفحص السريع):
+
+- **أخطاء تحميل المعاملات**: تأكد من توافق `--num_params` مع ملف المعاملات المحمّل.
+- **OOM / ضغط ذاكرة**: قلّل `--chunk_size` و/أو زد `--bin_width`.
+- **جودة تعويض ضعيفة**: زد `--iterations`، فعّل المعاملات القابلة للتدريب (`--a_trainable`, `--b_trainable`, واختياريًا `--boundary_trainable`)، وتحقق من جودة التقسيم.
+- **لا توجد ملفات segment ناتجة**: تحقق من مسار RAW، وتوفر قارئ Metavision، وتمرير `--segment_events`.
+- **تمرير معاملات Turbo wrapper**: ضع معاملات المدرب بعد `--` (أو استخدم `--extra`).
+- **مشاكل GUI**: تحقق من دعم Tkinter backend وتوفر SDK الكاميرا على منصتك.
 
 ## Roadmap
 
-- تحسين قابلية إعادة إنتاج الاعتماديات/الإقلاع (`requirements.txt` أو ملف قفل بيئة).
-- توحيد أسماء السكربتات القديمة ومراجع المسارات عبر التوثيق.
-- توسيع توثيق مخططات البيانات المتوقعة واتفاقيات حقول NPZ.
-- إضافة اختبارات نمط regression للتقسيم/التعويض على بيانات fixtures صغيرة.
-- الاستمرار في دمج مخرجات تحليل بجودة نشر من مسارات `align_*`.
-- إضافة/تحديث بقية ملفات README متعددة اللغات داخل `i18n/` لتطابق روابط التنقل اللغوي أعلى الصفحة بالكامل.
+- تحسين قابلية إعادة إنتاج بيئة التشغيل (`requirements.txt` أو lockfile للبيئة).
+- توحيد أسماء السكربتات القديمة وإشارات المسارات عبر التوثيق.
+- توسيع توثيق مخططات البيانات المتوقعة وحقول NPZ.
+- إضافة اختبارات نمط regression للتقسيم/التعويض على بيانات fixture صغيرة.
+- مواصلة دمج مخرجات تحليل بجودة نشر علمي من مسارات `align_*`.
+- الحفاظ على تزامن README الجذر وجميع ملفات `i18n/README.*.md` مع تطور الأقسام.
 
 ## Citation
 
-إذا كان هذا المستودع مفيدًا في بحثك، يُرجى الاستشهاد بالنسخة التمهيدية على Optica Open:
+إذا كان هذا المستودع مفيدًا لأبحاثك، يُرجى الاستشهاد بمقالة Optica:
 
 ```bibtex
-@article{chen2025selfcalibrated,
+@article{chen2026self,
   title   = {Self-calibrated neuromorphic hyperspectral derivative imaging},
   author  = {Chen, Rongzhou and Wang, Chutian and Li, Yuxing and Cao, Yuqing and Zhu, Shuo and Lam, Edmund},
-  year    = {2025},
-  journal = {Optica Open},
-  note    = {Preprint},
-  doi     = {10.1364/opticaopen.30739151}
+  journal = {Optica},
+  volume  = {13},
+  number  = {4},
+  pages   = {587--590},
+  year    = {2026},
+  publisher = {Optica Publishing Group},
+  doi     = {10.1364/OPTICA.585766}
 }
 ```
 
 ## Acknowledgements
 
-- النسخة التمهيدية على Optica Open وما يرتبط بها من مواد نشر المشروع.
+- مقالة Optica المنشورة والمواد المرتبطة بنشر المشروع.
 - مساهمو العتاد والبرمجيات عبر تطور المستودع كما هو موثق في `versions/` والأدوات المؤرشفة.
 - دعم المجتمع عبر GitHub Sponsors وقنوات المشروع المرتبطة.
 
 ## License
 
-يُنشر هذا المشروع تحت رخصة MIT. راجع [`LICENSE`](LICENSE) للتفاصيل.
+هذا المشروع مرخّص بموجب MIT License. راجع [`LICENSE`](../LICENSE) للتفاصيل.
 
 ## Contributing
 
 المساهمات مرحب بها.
 
-- ابدأ من السكربتات الحالية وأسلوب التوثيق القائم.
-- حافظ على إمكانية إعادة تنفيذ أمثلة سطر الأوامر باستخدام مسارات المستودع متى أمكن.
-- إذا أضفت مجموعات بيانات/مخرجات كبيرة، فتأكد من الالتزام بسياسات `.githooks/pre-commit`.
+- ابدأ من نمط السكربتات والتوثيق الحالي.
+- احرص على أن تكون أمثلة سطر الأوامر قابلة لإعادة التشغيل باستخدام مسارات المستودع قدر الإمكان.
+- عند إضافة بيانات/مخرجات كبيرة، التزم بسياسات `.githooks/pre-commit`.
 
-ملاحظة: لا يوجد ملف `CONTRIBUTING.md` مخصص في هذا الإصدار. عند الحاجة، افتح issue أو أرسل PR مع سير المساهمة الذي تقترحه.
+ملاحظة: لا يوجد `CONTRIBUTING.md` مخصص في هذا الإصدار المحلي. عند الحاجة، افتح issue أو أرسل PR يتضمن آلية المساهمة التي تقترحها.
 
 ## Support / Sponsor
 
-| Channel | Link | Use |
+| القناة | الرابط | الاستخدام |
 |---|---|---|
-| GitHub Sponsors | https://github.com/sponsors/lachlanchen | دعم المشروع المستمر |
-| Project site | https://lazying.art | تحديثات المشروع وروابط المنظومة |
-| Community chat | https://chat.lazying.art | نقاشات المجتمع |
-| Additional creator page | https://onlyideas.art | محتوى بحثي/إبداعي ذي صلة |
-| Core kit purchase page | https://lazying.art/openhi-kit.html | حزمة عتاد بداية لمسار OpenHI |
-| Promotion code | `OPTICA` | خصم 30% (كما هو موثق أعلاه) |
+| GitHub Sponsors | https://github.com/sponsors/lachlanchen | دعم المشروع واستدامته |
+| موقع المشروع | https://lazying.art | تحديثات المشروع وروابط المنظومة |
+| دردشة المجتمع | https://chat.lazying.art | نقاشات المجتمع |
+| صفحة منشئ إضافية | https://onlyideas.art | محتوى منشئ/بحثي ذي صلة |
+| صفحة شراء الحزمة الأساسية | https://lazying.art/openhi-kit.html | حزمة عتاد البداية لمسار OpenHI |
+| رمز ترويجي | `OPTICA` | خصم 30% (كما ورد أعلاه) |
+
+### Support Scope
+
+| نوع الدعم | أفضل قناة |
+|---|---|
+| التمويل والاستدامة | GitHub Sponsors |
+| منظومة البناء/الشراء | صفحة OpenHI kit على `lazying.art` |
+| استكشاف أخطاء المجتمع | `chat.lazying.art` |
+| تحديثات المشروع العامة | `lazying.art` وصفحات المنشئ |
 
 ---
 
 ### Notes
 
-- 📌 يحافظ هذا README على ملاحظات المسارات القديمة عندما سبّب تطور المستودع اختلافات في التسمية أو البنية.
-- 🔒 عند عدم اليقين حول المراجع الأقدم، يُحفَظ النص عمدًا بدلًا من حذفه.
+- 📌 يحافظ هذا README على ملاحظات المسارات القديمة حيث أدّى تطور المستودع إلى اختلافات في الأسماء/البنية.
+- 🔒 عند عدم اليقين في المراجع القديمة، يتم الإبقاء على النص عمدًا بدل حذفه.
