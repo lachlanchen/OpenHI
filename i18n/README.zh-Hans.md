@@ -18,6 +18,14 @@
 
 一个完整的流程，用于在色散光照（例如衍射光栅）条件下，从事件相机重建光谱。系统记录强度变化事件 $e = (x, y, t, p)$，其中 $p \in \{-1, +1\}$ 表示对数强度变化的极性，并可直接从事件流中自动推断扫描时序与标定元数据（“auto info”）。
 
+<p align="center">
+  <img src="../images/device_setup.png" alt="Device setup" width="24%">
+  <img src="../images/data_acquisition_gui.png" alt="Acquisition GUI" width="74%">
+</p>
+
+*左图：模块化透射显微系统，含电机驱动光栅照明臂与垂直检测堆栈。右图：用于实时监控分割、补偿与重建的数据采集 GUI。*
+
+
 ## At a Glance
 
 | Item | Details |
@@ -29,12 +37,7 @@
 | Canonical paper | [Optica Open preprint（DOI: 10.1364/opticaopen.30739151）](https://doi.org/10.1364/opticaopen.30739151) |
 | i18n in this checkout | `README.ar.md`, `README.es.md`, `README.fr.md`, `README.ja.md`, `README.ko.md` |
 
-<p align="center">
-  <img src="../images/device_setup.png" alt="Device setup" width="24%">
-  <img src="../images/data_acquisition_gui.png" alt="Acquisition GUI" width="74%">
-</p>
 
-*左图：模块化透射显微系统，含电机驱动光栅照明臂与垂直检测堆栈。右图：用于实时监控分割、补偿与重建的数据采集 GUI。*
 
 > [!TIP]
 > 购买论文 [Self-calibrated neuromorphic hyperspectral imaging](https://doi.org/10.1364/opticaopen.30739151)（已在 Optica Open 预印）对应的核心开发套件（不含相机、管镜、光学平台）：

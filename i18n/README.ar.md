@@ -23,6 +23,14 @@
 > [!IMPORTANT]
 > هذا README هو المصدر التقني المرجعي في جذر المستودع. يجب أن تعكس الملفات المحلية تحت `i18n/` تطور الأقسام/العناوين، مع سطر واحد فقط لخيارات اللغة في الأعلى (من دون تكرار شريط اللغات).
 
+<p align="center">
+  <img src="../images/device_setup.png" alt="Device setup" width="24%">
+  <img src="../images/data_acquisition_gui.png" alt="Acquisition GUI" width="74%">
+</p>
+
+*يسارًا: مجهر نفاذية معياري مع ذراع إضاءة بمحزوز متحرك آليًا ومكدس كشف عمودي. يمينًا: واجهة جمع بيانات لمراقبة التقسيم والتعويض وإعادة البناء في الزمن الحقيقي.*
+
+
 ## Quick Access
 
 | الحاجة | الانتقال السريع |
@@ -57,12 +65,7 @@
 | أصول العتاد | موجودة ضمن `3D/`, `PCB/`, `BOM/`, `firmware/` |
 | التوثيق متعدد اللغات | يحتوي `i18n/` على ملفات اللغات العشر المرتبطة |
 
-<p align="center">
-  <img src="../images/device_setup.png" alt="Device setup" width="24%">
-  <img src="../images/data_acquisition_gui.png" alt="Acquisition GUI" width="74%">
-</p>
 
-*يسارًا: مجهر نفاذية معياري مع ذراع إضاءة بمحزوز متحرك آليًا ومكدس كشف عمودي. يمينًا: واجهة جمع بيانات لمراقبة التقسيم والتعويض وإعادة البناء في الزمن الحقيقي.*
 
 > [!TIP]
 > اشترِ حزمة التطوير الأساسية (من دون الكاميرا، وعدسة الأنبوب، والطاولة البصرية) الخاصة بورقة [Self-calibrated neuromorphic hyperspectral derivative imaging](https://doi.org/10.1364/OPTICA.585766) المنشورة في Optica:

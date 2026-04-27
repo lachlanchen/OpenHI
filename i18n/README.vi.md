@@ -18,6 +18,14 @@
 
 Pipeline toàn diện để tái dựng phổ từ camera sự kiện với chiếu sáng tán sắc (ví dụ: lưới nhiễu xạ). Hệ thống ghi lại các sự kiện thay đổi cường độ $e = (x, y, t, p)$, trong đó $p \in \{-1, +1\}$ biểu thị cực tính của biến thiên log-cường độ, đồng thời tự suy luận thời điểm quét và metadata hiệu chuẩn ("auto info") trực tiếp từ luồng sự kiện.
 
+<p align="center">
+  <img src="../images/device_setup.png" alt="Device setup" width="24%">
+  <img src="../images/data_acquisition_gui.png" alt="Acquisition GUI" width="74%">
+</p>
+
+*Bên trái: kính hiển vi truyền qua dạng mô-đun với tay chiếu sáng lưới nhiễu xạ điều khiển bằng động cơ và cụm phát hiện theo trục đứng. Bên phải: GUI thu thập dữ liệu dùng để theo dõi phân đoạn, bù và tái dựng theo thời gian thực.*
+
+
 ## At a Glance
 
 | Mục | Chi tiết |
@@ -29,12 +37,7 @@ Pipeline toàn diện để tái dựng phổ từ camera sự kiện với chi�
 | Bài báo chuẩn | [Optica Open preprint (DOI: 10.1364/opticaopen.30739151)](https://doi.org/10.1364/opticaopen.30739151) |
 | i18n trong checkout này | `README.ar.md`, `README.es.md`, `README.fr.md`, `README.ja.md`, `README.ko.md`, `README.vi.md` |
 
-<p align="center">
-  <img src="../images/device_setup.png" alt="Device setup" width="24%">
-  <img src="../images/data_acquisition_gui.png" alt="Acquisition GUI" width="74%">
-</p>
 
-*Bên trái: kính hiển vi truyền qua dạng mô-đun với tay chiếu sáng lưới nhiễu xạ điều khiển bằng động cơ và cụm phát hiện theo trục đứng. Bên phải: GUI thu thập dữ liệu dùng để theo dõi phân đoạn, bù và tái dựng theo thời gian thực.*
 
 > [!TIP]
 > Mua bộ kit phát triển cốt lõi (không gồm camera, tube lens và optical table) cho bài [Self-calibrated neuromorphic hyperspectral imaging](https://doi.org/10.1364/opticaopen.30739151) đã preprint trên Optica Open:

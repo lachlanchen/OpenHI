@@ -19,6 +19,14 @@
 
 Eine umfassende Pipeline zur Rekonstruktion von Spektren aus Event-Kameras bei dispersiver Beleuchtung (z. B. Beugungsgitter). Das System zeichnet Intensitätsänderungs-Events $e = (x, y, t, p)$ auf, wobei $p \in \{-1, +1\}$ die Polarität der Log-Intensitätsänderung kennzeichnet, und leitet Scan-Timing sowie Kalibriermetadaten ("Auto-Info") direkt aus dem Event-Stream ab.
 
+<p align="center">
+  <img src="../images/device_setup.png" alt="Device setup" width="24%">
+  <img src="../images/data_acquisition_gui.png" alt="Acquisition GUI" width="74%">
+</p>
+
+*Links: modulares Transmissionsmikroskop mit motorisiertem Gitter-Beleuchtungsarm und vertikalem Detektionsstapel. Rechts: Datenaufnahme-GUI zur Echtzeitüberwachung von Segmentierung, Kompensation und Rekonstruktion.*
+
+
 ## Auf einen Blick
 
 | Element | Details |
@@ -30,12 +38,7 @@ Eine umfassende Pipeline zur Rekonstruktion von Spektren aus Event-Kameras bei d
 | Referenz-Paper | [Optica Open Preprint (DOI: 10.1364/opticaopen.30739151)](https://doi.org/10.1364/opticaopen.30739151) |
 | i18n in diesem Checkout | `README.ar.md`, `README.es.md`, `README.fr.md`, `README.ja.md`, `README.ko.md` |
 
-<p align="center">
-  <img src="images/device_setup.png" alt="Device setup" width="24%">
-  <img src="images/data_acquisition_gui.png" alt="Acquisition GUI" width="74%">
-</p>
 
-*Links: modulares Transmissionsmikroskop mit motorisiertem Gitter-Beleuchtungsarm und vertikalem Detektionsstapel. Rechts: Datenaufnahme-GUI zur Echtzeitüberwachung von Segmentierung, Kompensation und Rekonstruktion.*
 
 > [!TIP]
 > Kaufen Sie das zentrale Development-Kit (ohne Kamera, Tubuslinse und optischen Tisch) für das Paper [Self-calibrated neuromorphic hyperspectral imaging](https://doi.org/10.1364/opticaopen.30739151), das auf Optica Open als Preprint veröffentlicht wurde:

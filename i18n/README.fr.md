@@ -18,6 +18,14 @@
 
 Un pipeline complet pour reconstruire des spectres à partir de caméras événementielles avec illumination dispersée (p. ex. réseau de diffraction). Le système enregistre des événements de variation d'intensité $e = (x, y, t, p)$ où $p \in \{-1, +1\}$ indique la polarité de variation de log-intensité, et infère automatiquement la temporalité du balayage et les métadonnées de calibration (« auto info ») directement à partir du flux d'événements.
 
+<p align="center">
+  <img src="../images/device_setup.png" alt="Device setup" width="24%">
+  <img src="../images/data_acquisition_gui.png" alt="Acquisition GUI" width="74%">
+</p>
+
+*Gauche : microscope de transmission modulaire avec bras d'illumination par réseau motorisé et pile de détection verticale. Droite : interface d'acquisition utilisée pour surveiller en temps réel la segmentation, la compensation et les reconstructions.*
+
+
 ## En bref
 
 | Élément | Détails |
@@ -29,12 +37,7 @@ Un pipeline complet pour reconstruire des spectres à partir de caméras événe
 | Article canonique | [Prépublication Optica Open (DOI: 10.1364/opticaopen.30739151)](https://doi.org/10.1364/opticaopen.30739151) |
 | i18n dans ce checkout | `README.ar.md`, `README.es.md`, `README.fr.md`, `README.ja.md`, `README.ko.md` |
 
-<p align="center">
-  <img src="images/device_setup.png" alt="Device setup" width="24%">
-  <img src="images/data_acquisition_gui.png" alt="Acquisition GUI" width="74%">
-</p>
 
-*Gauche : microscope de transmission modulaire avec bras d'illumination par réseau motorisé et pile de détection verticale. Droite : interface d'acquisition utilisée pour surveiller en temps réel la segmentation, la compensation et les reconstructions.*
 
 > [!TIP]
 > Achetez le kit de développement principal (hors caméra, lentille tube et table optique) pour l'article [Self-calibrated neuromorphic hyperspectral imaging](https://doi.org/10.1364/opticaopen.30739151) prépublié sur Optica Open :

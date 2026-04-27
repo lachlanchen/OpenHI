@@ -24,6 +24,14 @@ Un pipeline integral para reconstruir espectros a partir de cámaras de eventos 
 > [!IMPORTANT]
 > Este README es la fuente técnica canónica en la raíz del repositorio. Los archivos localizados en `i18n/` deben reflejar la evolución de secciones/encabezados y mantener exactamente una línea de opciones de idioma al inicio (sin barras de idioma duplicadas).
 
+<p align="center">
+  <img src="../images/device_setup.png" alt="Configuración del dispositivo" width="24%">
+  <img src="../images/data_acquisition_gui.png" alt="GUI de adquisición" width="74%">
+</p>
+
+*Izquierda: microscopio de transmisión modular con brazo motorizado de iluminación por rejilla y pila de detección vertical. Derecha: GUI de adquisición de datos usada para monitorizar segmentación, compensación y reconstrucciones en tiempo real.*
+
+
 ## Acceso Rápido
 
 | Necesidad | Ir a |
@@ -58,12 +66,7 @@ Un pipeline integral para reconstruir espectros a partir de cámaras de eventos 
 | Material de hardware | Disponible en `3D/`, `PCB/`, `BOM/`, `firmware/` |
 | Documentación multilingüe | `i18n/` contiene los 10 archivos de idioma enlazados |
 
-<p align="center">
-  <img src="../images/device_setup.png" alt="Configuración del dispositivo" width="24%">
-  <img src="../images/data_acquisition_gui.png" alt="GUI de adquisición" width="74%">
-</p>
 
-*Izquierda: microscopio de transmisión modular con brazo motorizado de iluminación por rejilla y pila de detección vertical. Derecha: GUI de adquisición de datos usada para monitorizar segmentación, compensación y reconstrucciones en tiempo real.*
 
 > [!TIP]
 > Compra el kit de desarrollo central (sin incluir cámara, lente tubular ni mesa óptica) para el artículo [Self-calibrated neuromorphic hyperspectral derivative imaging](https://doi.org/10.1364/OPTICA.585766) publicado en Optica:

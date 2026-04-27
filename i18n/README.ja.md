@@ -18,6 +18,14 @@
 
 回折格子などの分散照明を用いたイベントカメラから、スペクトルを再構成するための包括的パイプラインです。システムは強度変化イベント $e = (x, y, t, p)$ を記録し、$p \in \{-1, +1\}$ は対数強度変化の極性を表します。さらにイベントストリームから走査タイミングと校正メタデータ（"auto info"）を自動推定します。
 
+<p align="center">
+  <img src="../images/device_setup.png" alt="Device setup" width="24%">
+  <img src="../images/data_acquisition_gui.png" alt="Acquisition GUI" width="74%">
+</p>
+
+*左: モーター駆動の格子照明アームと垂直検出スタックを備えたモジュール式透過顕微鏡。右: セグメンテーション、補償、再構成をリアルタイム監視するデータ取得 GUI。*
+
+
 ## At a Glance
 
 | Item | Details |
@@ -29,12 +37,7 @@
 | Canonical paper | [Optica Open preprint (DOI: 10.1364/opticaopen.30739151)](https://doi.org/10.1364/opticaopen.30739151) |
 | i18n in this checkout | `README.ar.md`, `README.es.md`, `README.fr.md`, `README.ja.md`, `README.ko.md` |
 
-<p align="center">
-  <img src="images/device_setup.png" alt="Device setup" width="24%">
-  <img src="images/data_acquisition_gui.png" alt="Acquisition GUI" width="74%">
-</p>
 
-*左: モーター駆動の格子照明アームと垂直検出スタックを備えたモジュール式透過顕微鏡。右: セグメンテーション、補償、再構成をリアルタイム監視するデータ取得 GUI。*
 
 > [!TIP]
 > Optica Open にプレプリント公開された論文 [Self-calibrated neuromorphic hyperspectral imaging](https://doi.org/10.1364/opticaopen.30739151) のコア開発キット（カメラ、チューブレンズ、光学定盤を除く）は以下から購入できます:

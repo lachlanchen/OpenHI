@@ -24,6 +24,14 @@ A comprehensive pipeline for reconstructing spectra from event cameras with disp
 > [!IMPORTANT]
 > This README is the canonical technical source for the repository root. Localized files under `i18n/` should mirror section and header evolution while keeping exactly one language-options line at the top.
 
+<p align="center">
+  <img src="images/device_setup.png" alt="Device setup" width="24%">
+  <img src="images/data_acquisition_gui.png" alt="Acquisition GUI" width="74%">
+</p>
+
+*Left: modular transmission microscope with a motorised grating illumination arm and vertical detection stack. Right: data-acquisition GUI used to monitor segmentation, compensation, and reconstructions in real time.*
+
+
 ## Quick Access
 
 | Need | Jump to |
@@ -58,12 +66,7 @@ A comprehensive pipeline for reconstructing spectra from event cameras with disp
 | Hardware collateral | Present under `3D/`, `PCB/`, `BOM/`, `firmware/` |
 | Multilingual docs | `i18n/` contains all 10 linked language files |
 
-<p align="center">
-  <img src="images/device_setup.png" alt="Device setup" width="24%">
-  <img src="images/data_acquisition_gui.png" alt="Acquisition GUI" width="74%">
-</p>
 
-*Left: modular transmission microscope with a motorised grating illumination arm and vertical detection stack. Right: data-acquisition GUI used to monitor segmentation, compensation, and reconstructions in real time.*
 
 > [!TIP]
 > Purchase the core development kit (excluding camera, tube lens, and optical table) for the paper [Self-calibrated neuromorphic hyperspectral derivative imaging](https://doi.org/10.1364/OPTICA.585766) published in Optica:

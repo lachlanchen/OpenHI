@@ -18,6 +18,14 @@
 
 一個完整流程，用於在色散光照（例如繞射光柵）下，從事件相機重建光譜。系統記錄強度變化事件 $e = (x, y, t, p)$，其中 $p \in \{-1, +1\}$ 表示對數強度變化的極性，並可直接從事件流中自動推斷掃描時序與校準中繼資料（"auto info"）。
 
+<p align="center">
+  <img src="../images/device_setup.png" alt="裝置配置" width="24%">
+  <img src="../images/data_acquisition_gui.png" alt="資料擷取 GUI" width="74%">
+</p>
+
+*左圖：模組化穿透式顯微系統，含馬達化光柵照明臂與垂直偵測堆疊。右圖：用於即時監看分段、補償與重建的資料擷取 GUI。*
+
+
 ## 快速總覽
 
 | 項目 | 說明 |
@@ -29,12 +37,7 @@
 | 標準論文 | [Optica Open preprint（DOI: 10.1364/opticaopen.30739151）](https://doi.org/10.1364/opticaopen.30739151) |
 | 此 checkout 的 i18n | `README.ar.md`、`README.es.md`、`README.fr.md`、`README.ja.md`、`README.ko.md` |
 
-<p align="center">
-  <img src="../images/device_setup.png" alt="裝置配置" width="24%">
-  <img src="../images/data_acquisition_gui.png" alt="資料擷取 GUI" width="74%">
-</p>
 
-*左圖：模組化穿透式顯微系統，含馬達化光柵照明臂與垂直偵測堆疊。右圖：用於即時監看分段、補償與重建的資料擷取 GUI。*
 
 > [!TIP]
 > 購買論文 [Self-calibrated neuromorphic hyperspectral imaging](https://doi.org/10.1364/opticaopen.30739151)（已於 Optica Open 預印）所使用的核心開發套件（不含相機、tube lens 與光學平台）：

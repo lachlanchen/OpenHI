@@ -18,6 +18,14 @@
 
 회절격자 같은 분산 조명을 사용하는 이벤트 카메라에서 스펙트럼을 재구성하기 위한 종합 파이프라인입니다. 시스템은 강도 변화 이벤트 $e = (x, y, t, p)$를 기록하며, 여기서 $p \in \{-1, +1\}$는 로그 강도 변화의 극성을 의미합니다. 또한 이벤트 스트림에서 스캔 타이밍 및 보정 메타데이터("auto info")를 자동 추론합니다.
 
+<p align="center">
+  <img src="../images/device_setup.png" alt="Device setup" width="24%">
+  <img src="../images/data_acquisition_gui.png" alt="Acquisition GUI" width="74%">
+</p>
+
+*왼쪽: 모터 구동 격자 조명 암과 수직 검출 스택을 갖춘 모듈형 투과 현미경. 오른쪽: 세그멘테이션, 보상, 재구성을 실시간으로 모니터링하는 데이터 수집 GUI.*
+
+
 ## At a Glance
 
 | Item | Details |
@@ -29,12 +37,7 @@
 | Canonical paper | [Optica Open preprint (DOI: 10.1364/opticaopen.30739151)](https://doi.org/10.1364/opticaopen.30739151) |
 | i18n in this checkout | `README.ar.md`, `README.es.md`, `README.fr.md`, `README.ja.md`, `README.ko.md` |
 
-<p align="center">
-  <img src="images/device_setup.png" alt="Device setup" width="24%">
-  <img src="images/data_acquisition_gui.png" alt="Acquisition GUI" width="74%">
-</p>
 
-*왼쪽: 모터 구동 격자 조명 암과 수직 검출 스택을 갖춘 모듈형 투과 현미경. 오른쪽: 세그멘테이션, 보상, 재구성을 실시간으로 모니터링하는 데이터 수집 GUI.*
 
 > [!TIP]
 > Optica Open에 프리프린트로 공개된 논문 [Self-calibrated neuromorphic hyperspectral imaging](https://doi.org/10.1364/opticaopen.30739151)의 핵심 개발 키트(카메라, 튜브 렌즈, 광학 테이블 제외) 구매 링크:
