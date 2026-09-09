@@ -1,0 +1,101 @@
+name: Reproducibility or setup report
+description: Record the smallest public OpenHI software-stage failure another person can inspect.
+title: "[reproduction] "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for making the failure reproducible. Share only public setup metadata and a minimal error. Do not upload private datasets, credentials, license files, unpublished measurements, or identifying laboratory information.
+
+  - type: dropdown
+    id: stage
+    attributes:
+      label: Pipeline stage
+      description: Choose the first stage that does not produce the expected observable.
+      options:
+        - Event segmentation
+        - Multi-window compensation
+        - Boundaries or frame visualization
+        - Cumulative or spectral visualization
+        - Acquisition GUI or camera integration
+        - Another named script
+    validations:
+      required: true
+
+  - type: input
+    id: revision
+    attributes:
+      label: OpenHI revision
+      description: Paste the Git commit SHA, not only a branch name.
+      placeholder: 40-character commit SHA
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Include operating system, Python, relevant package versions, CPU/GPU, and any required SDK version. Remove serial numbers and license details.
+      placeholder: |
+        OS:
+        Python:
+        NumPy / PyTorch / Matplotlib:
+        CPU / GPU:
+        Required SDK:
+    validations:
+      required: true
+
+  - type: textarea
+    id: input_shape
+    attributes:
+      label: Minimal input description
+      description: Describe file type, required array names, shapes, dtypes, dimensions, and approximate size. Do not attach private source data.
+      placeholder: NPZ with x, y, t, p arrays; each shape (...); sensor ... × ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: command
+    attributes:
+      label: Exact command
+      description: Paste the smallest command that reaches the failure, with private paths replaced by placeholders.
+      render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: first_error
+    attributes:
+      label: First error or wrong observable
+      description: Include the first actionable traceback or describe the first output that differs. A screenshot alone is not enough.
+      render: text
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected observable
+      description: State the file, plot, count, or other narrow result you expected and why.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Public-report checks
+      options:
+        - label: I tried the documented quick-start path and searched existing issues.
+          required: true
+        - label: I removed credentials, private data, license material, and identifying laboratory details.
+          required: true
+        - label: I have the right to share every log excerpt and attachment in this public issue.
+          required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        Want to see the expected evidence packet first? [Inspect the frozen synthetic sample](https://lazying.art/openhi-reproducibility/sample-report/?utm_source=github&utm_medium=issue_template&utm_campaign=openhi_reproducibility&utm_content=public_report).
+
+        If the setup cannot be discussed publicly, the separate [free fit check](https://lazying.art/openhi-reproducibility/fit-check/?utm_source=github&utm_medium=issue_template&utm_campaign=openhi_reproducibility&utm_content=private_fit) asks for metadata only. No source upload or payment occurs there.

@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Inspect a completed software-stage sample
+    url: https://lazying.art/openhi-reproducibility/sample-report/?utm_source=github&utm_medium=issue_chooser&utm_campaign=openhi_reproducibility&utm_content=sample
+    about: See the fixture, environment, command, log, output, hashes, and narrow go/no-go boundary.
+  - name: Private OpenHI fit check
+    url: https://lazying.art/openhi-reproducibility/fit-check/?utm_source=github&utm_medium=issue_chooser&utm_campaign=openhi_reproducibility&utm_content=private_fit
+    about: Share setup metadata privately before any source transfer or payment.
