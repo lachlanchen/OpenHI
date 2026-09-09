@@ -42,6 +42,7 @@ A comprehensive pipeline for reconstructing spectra from event cameras with disp
 | Tune parameters | [Configuration 🎛️](#configuration), [Configuration Examples 🧩](#configuration-examples) |
 | Use GUI tools | [Additional Tools 🛠️](#additional-tools) |
 | Hardware docs (BOM, PCB, 3D, firmware) | [Repository Map 🗺️](#repository-map) |
+| Inspect a frozen software-stage run | [Fixture, environment, log, output, and hashes](https://lazying.art/openhi-reproducibility/sample-report/?utm_source=github&utm_medium=readme&utm_campaign=openhi_reproducibility&utm_content=sample_report) |
 | Test one software stage on your setup | [USD 500 reproducibility sprint](https://lazying.art/openhi-reproducibility/?utm_source=github&utm_medium=readme&utm_campaign=openhi_reproducibility&utm_content=quick_access) |
 | Multilingual maintenance rules | [Internationalization 🌍](#internationalization) |
 | Sponsor and support links | [Support / Sponsor 💖](#support--sponsor) |
