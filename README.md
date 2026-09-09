@@ -42,6 +42,7 @@ A comprehensive pipeline for reconstructing spectra from event cameras with disp
 | Tune parameters | [Configuration 🎛️](#configuration), [Configuration Examples 🧩](#configuration-examples) |
 | Use GUI tools | [Additional Tools 🛠️](#additional-tools) |
 | Hardware docs (BOM, PCB, 3D, firmware) | [Repository Map 🗺️](#repository-map) |
+| Test one software stage on your setup | [USD 500 reproducibility sprint](https://lazying.art/openhi-reproducibility/?utm_source=github&utm_medium=readme&utm_campaign=openhi_reproducibility&utm_content=quick_access) |
 | Multilingual maintenance rules | [Internationalization 🌍](#internationalization) |
 | Sponsor and support links | [Support / Sponsor 💖](#support--sponsor) |
 
@@ -69,9 +70,10 @@ A comprehensive pipeline for reconstructing spectra from event cameras with disp
 
 
 > [!TIP]
-> Purchase the core development kit (excluding camera, tube lens, and optical table) for the paper [Self-calibrated neuromorphic hyperspectral derivative imaging](https://doi.org/10.1364/OPTICA.585766) published in Optica:
+> Ask about the core development kit (excluding camera, tube lens, and optical table) for the paper [Self-calibrated neuromorphic hyperspectral derivative imaging](https://doi.org/10.1364/OPTICA.585766) published in Optica:
 > - https://lazying.art/openhi-kit.html
-> - Promotion code for 30% off: `OPTICA`
+>
+> Evaluating the software first? The [OpenHI Software Reproducibility Sprint](https://lazying.art/openhi-reproducibility/?utm_source=github&utm_medium=readme&utm_campaign=openhi_reproducibility&utm_content=software_first) tests one named pipeline stage on one existing workstation and rights-cleared dataset before a hardware decision.
 
 ## Contents
 
@@ -888,6 +890,8 @@ If this project is useful to you, these links directly support ongoing maintenan
 | Donate | PayPal | Stripe |
 |---|---|---|
 | [![Donate](https://camo.githubusercontent.com/24a4914f0b42c6f435f9e101621f1e52535b02c225764b2f6cc99416926004b7/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f446f6e6174652d4c617a79696e674172742d3045413545393f7374796c653d666f722d7468652d6261646765266c6f676f3d6b6f2d6669266c6f676f436f6c6f723d7768697465)](https://chat.lazying.art/donate) | [![PayPal](https://camo.githubusercontent.com/d0f57e8b016517a4b06961b24d0ca87d62fdba16e18bbdb6aba28e978dc0ea21/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f50617950616c2d526f6e677a686f754368656e2d3030343537433f7374796c653d666f722d7468652d6261646765266c6f676f3d70617970616c266c6f676f436f6c6f723d7768697465)](https://paypal.me/RongzhouChen) | [![Stripe](https://camo.githubusercontent.com/1152dfe04b6943afe3a8d2953676749603fb9f95e24088c92c97a01a897b4942/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f5374726970652d446f6e6174652d3633354246463f7374796c653d666f722d7468652d6261646765266c6f676f3d737472697065266c6f676f436f6c6f723d7768697465)](https://buy.stripe.com/aFadR8gIaflgfQV6T4fw400) |
+
+Need help reproducing one software stage before committing to hardware? See the [fixed USD 500 OpenHI Software Reproducibility Sprint](https://lazying.art/openhi-reproducibility/?utm_source=github&utm_medium=readme&utm_campaign=openhi_reproducibility&utm_content=support). It begins with a free fit check.
 
 ---
 
