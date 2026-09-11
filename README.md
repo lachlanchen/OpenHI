@@ -14,6 +14,7 @@
 [![Quick Start](https://img.shields.io/badge/QuickStart-5%20min%20path-16a34a.svg)](#quick-start-5-min-path)
 [![BOM](https://img.shields.io/badge/BOM-Core%20module%20available-f59e0b.svg)](#bill-of-materials-core-module)
 [![Quickstart Doc](https://img.shields.io/badge/Guide-QUICKSTART.md-334155.svg)](QUICKSTART.md)
+[![Software reproducibility sprint](https://img.shields.io/badge/Software%20reproducibility-USD%20500%20sprint-7c3aed.svg)](https://lazying.art/openhi-reproducibility/?utm_source=github&utm_medium=readme&utm_campaign=openhi_reproducibility&utm_content=hero_badge)
 
 
 > [!NOTE]
